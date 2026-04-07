@@ -58,5 +58,15 @@ namespace PharmaCore.Infrastructure.Repositories
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> PhoneExistsAsync(string phone)
+        {
+            return await _context.Users.AnyAsync(u => u.Phone == phone);
+        }
+
+        public async Task<bool> EmailExistsAsync(string email)
+        {
+            return await _context.Users.AnyAsync(u => u.Email == email);
+        }
     }
 }
