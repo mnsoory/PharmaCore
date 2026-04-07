@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PharmaCore.Core.Enums;
+using System;
 
 
 namespace PharmaCore.Core.Entities
@@ -12,7 +13,7 @@ namespace PharmaCore.Core.Entities
         public string Email { get; set; }
         public string? Phone { get; set; }
         public string PasswordHash { get; set; }
-        public byte Role { get; set; }
+        public byte Role { get; set; } 
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
     }
