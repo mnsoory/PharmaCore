@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
+﻿using Microsoft.AspNetCore.Mvc;
 using PharmaCore.Core.DTOs.User;
 using PharmaCore.Core.Interfaces.Services;
 
@@ -50,6 +48,44 @@ namespace PharmaCore.API.Controllers
         {
             var users = await _userService.GetAllAsync();
             return Ok(users);
+        }
+
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateUserDto updateUserDto)
+        {
+            await _userService.UpdateUserAsync(id, updateUserDto);
+            return NoContent();
+        }
+
+        [HttpPatch("{id}/password")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ChangePassword(int id, [FromBody] ChangePasswordDto changePasswordDto)
+        {
+            await _userService.ChangePasswordAsync(id, changePasswordDto);
+            return NoContent();
+        }
+
+        [HttpPatch("{id}/status")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ToggleStatus(int id)
+        {
+            bool isActive = await _userService.ToggleUserStatusAsync(id);
+            return Ok(isActive);
+        }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _userService.DeleteUserAsync(id);
+            return NoContent();
         }
     }
 }
