@@ -62,7 +62,8 @@ namespace PharmaCore.Application.Services
         {
             var users = await _userRepository.GetAllAsync();
 
-            return _mapper.Map< IEnumerable<UserResponseDto>>(users);
+            var usersDto = _mapper.Map<IEnumerable<UserResponseDto>>(users);
+            return usersDto;
         }
 
         public async Task<UserResponseDto> GetByUsernameAsync(string username)
@@ -77,22 +78,54 @@ namespace PharmaCore.Application.Services
 
         public async Task UpdateUserAsync(int userId, UpdateUserDto updateUserDto)
         {
-            throw new NotImplementedException();
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null) throw new NotFoundException("User not found.");
+
+            if (user.Email != updateUserDto.Email && await _userRepository.EmailExistsAsync(updateUserDto.Email))
+            {
+                throw new BusinessException("This email is already registered to another user.");
+            }
+
+            _mapper.Map(updateUserDto, user);
+
+            await _userRepository.UpdateAsync(user);
         }
 
-        public Task ChangePasswordAsync(int userId, ChangePasswordDto changePasswordDto)
+        public async Task ChangePasswordAsync(int userId, ChangePasswordDto dto)
         {
-            throw new NotImplementedException();
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null) throw new NotFoundException("User not found.");
+
+            if (dto.NewPassword == dto.CurrentPassword)
+                throw new BusinessException("New password must be different from the current password.");
+
+            if (dto.NewPassword != dto.PasswordConfirmation)
+                throw new BusinessException("Passwords do not match.");
+
+            if(!_passwordHasher.VerifyPassword(dto.CurrentPassword, user.PasswordHash))
+                throw new BusinessException("Current password is incorrect.");
+
+            user.PasswordHash = _passwordHasher.HashPassword(dto.NewPassword);
+
+            await _userRepository.UpdateAsync(user);
         }
 
-        public Task<bool> ToggleUserStatusAsync(int userId)
+        public async Task<bool> ToggleUserStatusAsync(int userId)
         {
-            throw new NotImplementedException();
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null) throw new NotFoundException("User not found.");
+
+            user.IsActive = !user.IsActive;
+            await _userRepository.UpdateAsync(user);
+            return user.IsActive;
         }
 
-        public Task DeleteUserAsync(int userId)
+        public async Task DeleteUserAsync(int userId)
         {
-            throw new NotImplementedException();
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null) throw new NotFoundException("User not found.");
+
+            await _userRepository.DeleteAsync(user);
         }
     }
 }

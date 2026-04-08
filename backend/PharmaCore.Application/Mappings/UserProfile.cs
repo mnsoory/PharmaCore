@@ -17,6 +17,7 @@ namespace PharmaCore.Application.Mappings
                 .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => false));
 
             CreateMap<User, UserResponseDto>();
+            CreateMap<UpdateUserDto, User>();
         }
     }
 }

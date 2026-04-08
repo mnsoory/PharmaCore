@@ -13,7 +13,7 @@ namespace PharmaCore.Core.Interfaces.Repositories
 
         Task UpdateAsync(User user);
 
-        Task DeleteAsync(int id);
+        Task DeleteAsync(User user);
 
         Task<User?> GetByUsernameAsync(string username);
 

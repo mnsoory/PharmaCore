@@ -21,14 +21,10 @@ namespace PharmaCore.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(User user)
         {
-            User? user = await _context.Users.FindAsync(id);
-            if(user != null)
-            {
-                user.IsDeleted = true;
-                await _context.SaveChangesAsync();
-            }
+            user.IsDeleted = true;
+            await _context.SaveChangesAsync();
         }
 
         public Task<bool> ExistsAsync(string username)
