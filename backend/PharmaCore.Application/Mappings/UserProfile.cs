@@ -15,6 +15,8 @@ namespace PharmaCore.Application.Mappings
                 .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
                 .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true))
                 .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => false));
+
+            CreateMap<User, UserResponseDto>();
         }
     }
 }
