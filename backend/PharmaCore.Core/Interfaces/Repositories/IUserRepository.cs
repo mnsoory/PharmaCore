@@ -17,6 +17,8 @@ namespace PharmaCore.Core.Interfaces.Repositories
 
         Task<User?> GetByUsernameAsync(string username);
 
+        Task<User?> GetByIdentifierAsync(string identifier);
+
         Task<bool> ExistsAsync(string username);
 
         Task<bool> PhoneExistsAsync(string phone);

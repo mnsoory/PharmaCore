@@ -13,7 +13,7 @@ namespace PharmaCore.Core.Entities
         public string Email { get; set; }
         public string? Phone { get; set; }
         public string PasswordHash { get; set; }
-        public byte Role { get; set; } 
+        public UserRole Role { get; set; } 
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
     }

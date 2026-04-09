@@ -16,5 +16,10 @@ namespace PharmaCore.Core.Exceptions
     {
         public NotFoundException(string message) : base(message) { }
     }
+
+    public class UnauthorizedException : BaseException
+    {
+        public UnauthorizedException(string message) : base(message) { }
+    }
 }
 
