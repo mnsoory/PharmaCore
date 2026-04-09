@@ -3,6 +3,7 @@
 using AutoMapper;
 using PharmaCore.Core.DTOs.User;
 using PharmaCore.Core.Entities;
+using PharmaCore.Core.Enums;
 using PharmaCore.Core.Exceptions;
 using PharmaCore.Core.Interfaces.Repositories;
 using PharmaCore.Core.Interfaces.Security;
@@ -16,12 +17,17 @@ namespace PharmaCore.Application.Services
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IMapper _mapper;
+        private readonly ITokenService _tokenService;
+        private readonly IUserContextService _userContextService;
 
-        public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher, IMapper mapper)
+        public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher, IMapper mapper, 
+            ITokenService tokenService, IUserContextService userContextService)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
             _mapper = mapper;
+            _tokenService = tokenService;
+            _userContextService = userContextService;
         }
 
         public async Task<UserResponseDto> RegisterUser(RegisterUserDto userDto)
@@ -42,10 +48,22 @@ namespace PharmaCore.Application.Services
             return _mapper.Map<UserResponseDto>(userEntity);
         }
 
-
-        public Task<AuthResponseDto> LoginAsync(LoginRequestDto loginDto)
+        public async Task<AuthResponseDto> LoginAsync(LoginRequestDto loginDto)
         {
-            throw new NotImplementedException();
+            var user = await _userRepository.GetByIdentifierAsync(loginDto.Identifier);
+
+            if (user == null || !_passwordHasher.VerifyPassword(loginDto.Password, user.PasswordHash))
+            {
+                throw new UnauthorizedException("Invalid username/email or password.");
+            }
+
+            var authResponse = _mapper.Map<AuthResponseDto>(user);
+            var tokenResponse = _tokenService.GenerateToken(user);
+
+            authResponse.Token = tokenResponse.AccessToken;
+            authResponse.ExpiresAt = tokenResponse.Expiration;
+
+            return authResponse;
         }
 
         public async Task<UserResponseDto> GetByIdAsync(int userId)
@@ -78,6 +96,14 @@ namespace PharmaCore.Application.Services
 
         public async Task UpdateUserAsync(int userId, UpdateUserDto updateUserDto)
         {
+            var currentUserId = _userContextService.GetUserId();
+            var currentUserRole = _userContextService.GetUserRole();
+
+            if (currentUserRole != UserRole.Admin.ToString() && currentUserId != userId)
+            {
+                throw new UnauthorizedException("You do not have permission to modify another user's data.");
+            }
+
             var user = await _userRepository.GetByIdAsync(userId);
             if (user == null) throw new NotFoundException("User not found.");
 
@@ -86,14 +112,21 @@ namespace PharmaCore.Application.Services
                 throw new BusinessException("This email is already registered to another user.");
             }
 
+            if (user.Phone != updateUserDto.Phone && await _userRepository.PhoneExistsAsync(updateUserDto.Phone))
+            {
+                throw new BusinessException("This phone number is already in use.");
+            }
+
             _mapper.Map(updateUserDto, user);
 
             await _userRepository.UpdateAsync(user);
         }
 
-        public async Task ChangePasswordAsync(int userId, ChangePasswordDto dto)
+        public async Task ChangePasswordAsync(ChangePasswordDto dto)
         {
-            var user = await _userRepository.GetByIdAsync(userId);
+            var currentUserId = _userContextService.GetUserId();
+
+            var user = await _userRepository.GetByIdAsync(currentUserId);
             if (user == null) throw new NotFoundException("User not found.");
 
             if (dto.NewPassword == dto.CurrentPassword)
@@ -126,6 +159,17 @@ namespace PharmaCore.Application.Services
             if (user == null) throw new NotFoundException("User not found.");
 
             await _userRepository.DeleteAsync(user);
+        }
+
+        public async Task UpdateUserRoleAsync(int userId, string newRole)
+        {
+            var role = Enum.Parse<UserRole>(newRole, true);
+
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null) throw new NotFoundException("User not found.");
+
+            user.Role = role;
+            await _userRepository.UpdateAsync(user);
         }
     }
 }
