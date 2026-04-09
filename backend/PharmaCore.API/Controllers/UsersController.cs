@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PharmaCore.Core.DTOs.User;
 using PharmaCore.Core.Interfaces.Services;
 
@@ -6,6 +7,7 @@ namespace PharmaCore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -15,7 +17,7 @@ namespace PharmaCore.API.Controllers
         }
 
         [HttpPost]
-        [Route("")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] RegisterUserDto userDto)
@@ -24,7 +26,18 @@ namespace PharmaCore.API.Controllers
             return CreatedAtRoute("GetById", new { id = newUser.UserId}, newUser);
         }
 
+        [HttpPost("login")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginRequestDto loginDto)
+        {
+            var result = await _userService.LoginAsync(loginDto);
+            return Ok(result);
+        }
+
         [HttpGet("{id}", Name = "GetById")]
+        [Authorize(Roles = "Admin,Pharmacist,Assistant")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(int id)
@@ -34,6 +47,7 @@ namespace PharmaCore.API.Controllers
         }
 
         [HttpGet("username/{username}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByUsername(string username)
@@ -43,6 +57,7 @@ namespace PharmaCore.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll()
         {
@@ -51,6 +66,7 @@ namespace PharmaCore.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Pharmacist,Assistant")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -60,17 +76,19 @@ namespace PharmaCore.API.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id}/password")]
+        [HttpPatch("password")]
+        [Authorize(Roles = "Admin,Pharmacist,Assistant")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> ChangePassword(int id, [FromBody] ChangePasswordDto changePasswordDto)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changePasswordDto)
         {
-            await _userService.ChangePasswordAsync(id, changePasswordDto);
+            await _userService.ChangePasswordAsync(changePasswordDto);
             return NoContent();
         }
 
         [HttpPatch("{id}/status")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ToggleStatus(int id)
@@ -79,7 +97,16 @@ namespace PharmaCore.API.Controllers
             return Ok(isActive);
         }
 
+        [HttpPatch("{id}/role")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateRole(int id, [FromBody] UpdateRoleDto dto)
+        {
+            await _userService.UpdateUserRoleAsync(id, dto.NewRole);
+            return NoContent();
+        }
+
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
