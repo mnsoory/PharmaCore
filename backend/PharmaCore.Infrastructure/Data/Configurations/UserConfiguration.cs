@@ -43,7 +43,7 @@ namespace PharmaCore.Infrastructure.Data.Configurations
 
             builder.Property(u => u.Role)
                    .IsRequired()
-                   .HasDefaultValue((byte)UserRole.Pharmacist);
+                   .HasDefaultValue(UserRole.Pharmacist);
             builder.HasIndex(u => u.Role);
 
             // Default Values for Flags

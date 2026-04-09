@@ -49,6 +49,12 @@ namespace PharmaCore.Infrastructure.Repositories
             return _context.Users.FirstOrDefaultAsync(u => u.Username == username);
         }
 
+        public async Task<User?> GetByIdentifierAsync(string identifier)
+        {
+            return await _context.Users
+                .FirstOrDefaultAsync(u => u.Username == identifier || u.Email == identifier);
+        }
+
         public async Task UpdateAsync(User user)
         {
             _context.Users.Update(user);
