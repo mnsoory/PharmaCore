@@ -1,14 +1,21 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PharmaCore.API.Middlewares;
 using PharmaCore.Application.Mappings;
 using PharmaCore.Application.Services;
 using PharmaCore.Core.Interfaces.Repositories;
 using PharmaCore.Core.Interfaces.Security;
 using PharmaCore.Core.Interfaces.Services;
+using PharmaCore.Core.Settings;
 using PharmaCore.Infrastructure.Data;
 using PharmaCore.Infrastructure.Repositories;
 using PharmaCore.Infrastructure.Security;
+using PharmaCore.Infrastructure.Services;
+using System.Security.Claims;
+using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,6 +41,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     }
 });
 
+
 // Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
@@ -46,8 +54,13 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.AddMaps(typeof(UserProfile).Assembly);
 });
 
+// Http Context
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserContextService, UserContextService>();
+
 // Security
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -72,6 +85,33 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader();
     });
 });
+
+// Authentication
+var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
+
+if (jwtSettings == null)
+{
+    throw new Exception("JWT Settings are missing from configuration.");
+}
+
+builder.Services.AddSingleton(jwtSettings);
+
+builder.Services.AddAuthentication()
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+    {
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = jwtSettings.Issuer,
+            ValidateAudience = true,
+            ValidAudience = jwtSettings.Audience,
+            ValidateLifetime = true,
+            RoleClaimType = ClaimTypes.Role,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SigningKey))
+        };
+    });
 
 var app = builder.Build();
 
