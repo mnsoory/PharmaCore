@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PharmaCore.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using PharmaCore.Infrastructure.Data;
 namespace PharmaCore.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260411123637_AddDrugsTable")]
+    partial class AddDrugsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,9 +75,6 @@ namespace PharmaCore.Infrastructure.Migrations
                     b.HasIndex("GenericName");
 
                     b.HasIndex("TradeName");
-
-                    b.HasIndex("TradeName", "Concentration", "Form", "Manufacturer")
-                        .IsUnique();
 
                     b.ToTable("Drugs", (string)null);
                 });
