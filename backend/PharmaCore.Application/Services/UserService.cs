@@ -19,15 +19,17 @@ namespace PharmaCore.Application.Services
         private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
         private readonly IUserContextService _userContextService;
+        private readonly IRefreshTokenRepository _refreshTokenRepository;
 
-        public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher, IMapper mapper, 
-            ITokenService tokenService, IUserContextService userContextService)
+        public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher, IMapper mapper,
+            ITokenService tokenService, IUserContextService userContextService, IRefreshTokenRepository refreshTokenRepository)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
             _mapper = mapper;
             _tokenService = tokenService;
             _userContextService = userContextService;
+            _refreshTokenRepository = refreshTokenRepository;
         }
 
         public async Task<UserResponseDto> RegisterUser(RegisterUserDto userDto)
@@ -52,17 +54,36 @@ namespace PharmaCore.Application.Services
         {
             var user = await _userRepository.GetByIdentifierAsync(loginDto.Identifier);
 
+
+
             if (user == null || !_passwordHasher.VerifyPassword(loginDto.Password, user.PasswordHash))
             {
                 throw new UnauthorizedException("Invalid username/email or password.");
             }
 
+            if (!user.IsActive)
+            {
+                throw new UnauthorizedException("Your account is deactivated. Please contact admin.");
+            }
+
             var authResponse = _mapper.Map<AuthResponseDto>(user);
             var tokenResponse = _tokenService.GenerateToken(user);
+            var refreshTokenValue = _tokenService.GenerateRefreshToken();
+
+
+            var refreshTokenEntity = new UserRefreshToken
+            {
+                Token = refreshTokenValue,
+                JwtId = tokenResponse.JwtId,
+                UserId = user.UserId,
+                ExpiryDate = DateTime.UtcNow.AddDays(7)
+            };
+
+            await _refreshTokenRepository.AddAsync(refreshTokenEntity);
 
             authResponse.Token = tokenResponse.AccessToken;
             authResponse.ExpiresAt = tokenResponse.Expiration;
-
+            authResponse.RefreshToken = refreshTokenValue;
             return authResponse;
         }
 
@@ -170,6 +191,71 @@ namespace PharmaCore.Application.Services
 
             user.Role = role;
             await _userRepository.UpdateAsync(user);
+        }
+
+        public async Task<AuthResponseDto> RefreshTokenAsync(RefreshTokenRequestDto requestDto)
+        {
+            var storedToken = await _refreshTokenRepository.GetByTokenAsync(requestDto.RefreshToken);
+
+            if (storedToken == null)
+            {
+                throw new UnauthorizedException("Refresh token does not exist.");
+            }
+
+            if (storedToken.IsRevoked || storedToken.IsUsed)
+            {
+                await _refreshTokenRepository.RevokeUserTokensAsync(storedToken.UserId);
+                throw new UnauthorizedException("Token has been compromised! All sessions revoked.");
+            }
+
+            if (storedToken.ExpiryDate < DateTime.UtcNow)
+            {
+                throw new UnauthorizedException("Refresh token has expired. Please login again.");
+            }
+
+            var jti = _tokenService.GetJtiFromExpiredToken(requestDto.Token);
+            if (storedToken.JwtId != jti)
+            {
+                throw new UnauthorizedException("Token mismatch.");
+            }
+
+            storedToken.IsUsed = true;
+            await _refreshTokenRepository.UpdateAsync(storedToken);
+
+            var user = storedToken.User;
+            var tokenResponse = _tokenService.GenerateToken(user);
+            var newRefreshTokenValue = _tokenService.GenerateRefreshToken();
+
+            var newRefreshTokenEntity = new UserRefreshToken
+            {
+                Token = newRefreshTokenValue,
+                JwtId = tokenResponse.JwtId,
+                UserId = user.UserId,
+                ExpiryDate = DateTime.UtcNow.AddDays(7)
+            };
+
+            await _refreshTokenRepository.AddAsync(newRefreshTokenEntity);
+
+            var authResponse = _mapper.Map<AuthResponseDto>(user);
+
+            authResponse.Token = tokenResponse.AccessToken;
+            authResponse.ExpiresAt = tokenResponse.Expiration;
+            authResponse.RefreshToken = newRefreshTokenValue;
+
+            return authResponse;
+        }
+
+        public async Task RevokeTokenAsync(string token)
+        {
+            var storedToken = await _refreshTokenRepository.GetByTokenAsync(token);
+
+            if (storedToken == null)
+            {
+                throw new UnauthorizedException("Refresh token does not exist.");
+            }
+
+            storedToken.IsRevoked = true;
+            await _refreshTokenRepository.UpdateAsync(storedToken);
         }
     }
 }

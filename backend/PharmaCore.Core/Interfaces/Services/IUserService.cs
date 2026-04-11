@@ -23,5 +23,9 @@ namespace PharmaCore.Core.Interfaces.Services
         Task UpdateUserRoleAsync(int userId, string newRole);
 
         Task DeleteUserAsync(int userId);
+
+        Task<AuthResponseDto> RefreshTokenAsync(RefreshTokenRequestDto requestDto);
+
+        Task RevokeTokenAsync(string token);
     }
 }
