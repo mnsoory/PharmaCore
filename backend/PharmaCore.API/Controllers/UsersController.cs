@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using PharmaCore.Core.DTOs.User;
 using PharmaCore.Core.Interfaces.Services;
 
@@ -28,11 +29,23 @@ namespace PharmaCore.API.Controllers
 
         [HttpPost("login")]
         [AllowAnonymous]
+        [EnableRateLimiting("LoginPolicy")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginRequestDto loginDto)
         {
             var result = await _userService.LoginAsync(loginDto);
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true, 
+                Secure = true,   
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(7)
+            };
+
+            Response.Cookies.Append("refreshToken", result.RefreshToken, cookieOptions);
+
             return Ok(result);
         }
 
@@ -114,5 +127,44 @@ namespace PharmaCore.API.Controllers
             await _userService.DeleteUserAsync(id);
             return NoContent();
         }
+
+        [HttpPost("refresh-token")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto requestDto)
+        {
+            var result = await _userService.RefreshTokenAsync(requestDto);
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(7)
+            };
+
+            Response.Cookies.Append("refreshToken", result.RefreshToken, cookieOptions);
+
+            return Ok(result);
+        }
+
+        [HttpPost("revoke-token")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RevokeToken()
+        {
+            var token = Request.Cookies["refreshToken"];
+
+            if (string.IsNullOrEmpty(token))
+                return BadRequest("Token is required.");
+
+            await _userService.RevokeTokenAsync(token);
+
+            Response.Cookies.Delete("refreshToken");
+
+            return Ok(new { message = "Token revoked successfully." });
+        }
     }
 }
+
