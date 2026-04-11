@@ -8,6 +8,9 @@ namespace PharmaCore.Core.Interfaces.Security
     public interface ITokenService
     {
         TokenResponseDto GenerateToken(User user);
+        string GenerateRefreshToken();
+
+        string GetJtiFromExpiredToken(string token);
 
     }
 }
