@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PharmaCore.API.Middlewares;
@@ -17,6 +18,7 @@ using PharmaCore.Infrastructure.Services;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +46,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
 // Services
 builder.Services.AddScoped<IUserService, UserService>();
@@ -113,6 +116,26 @@ builder.Services.AddAuthentication()
         };
     });
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter(policyName: "LoginPolicy", fixedOptions =>
+    {
+        fixedOptions.PermitLimit = 5;
+        fixedOptions.Window = TimeSpan.FromMinutes(30);
+        fixedOptions.QueueLimit = 0;
+        fixedOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
+
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        await context.HttpContext.Response.WriteAsJsonAsync(new
+        {
+            message = "Too many login attempts. Please try again after 30 minutes."
+        }, token);
+    };
+});
+
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
@@ -127,6 +150,10 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors();
+
+app.UseRateLimiter();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
