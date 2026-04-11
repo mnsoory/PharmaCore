@@ -47,9 +47,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+builder.Services.AddScoped<IDrugRepository, DrugRepository>();
 
 // Services
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IDrugService, DrugService>();
 
 // Mappings
 builder.Services.AddAutoMapper(cfg =>
@@ -86,6 +88,8 @@ builder.Services.AddCors(options =>
         policy.AllowAnyOrigin()
               .AllowAnyMethod()
               .AllowAnyHeader();
+              //.AllowCredentials();
+               //.WithOrigins("http://localhost:3000")
     });
 });
 
@@ -145,11 +149,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors();
 }
 
 app.UseHttpsRedirection();
-
-app.UseCors();
 
 app.UseRateLimiter();
 
