@@ -8,7 +8,7 @@ namespace PharmaCore.Core.Interfaces.Services
 {
     public interface IUserService
     {
-        Task<UserResponseDto> RegisterUser(RegisterUserDto userDto);
+        Task<UserResponseDto> RegisterAsync(RegisterUserDto userDto);
 
         Task<AuthResponseDto> LoginAsync(LoginRequestDto loginDto);
 
@@ -16,7 +16,7 @@ namespace PharmaCore.Core.Interfaces.Services
         Task<IEnumerable<UserResponseDto>> GetAllAsync();
         Task<UserResponseDto> GetByUsernameAsync(string username);
 
-        Task UpdateUserAsync(int userId, UpdateUserDto updateUserDto);
+        Task UpdateAsync(int userId, UpdateUserDto updateUserDto);
         Task ChangePasswordAsync(ChangePasswordDto changePasswordDto);
         Task<bool> ToggleUserStatusAsync(int userId); 
 

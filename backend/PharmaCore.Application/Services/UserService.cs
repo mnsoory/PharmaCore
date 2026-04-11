@@ -32,7 +32,7 @@ namespace PharmaCore.Application.Services
             _refreshTokenRepository = refreshTokenRepository;
         }
 
-        public async Task<UserResponseDto> RegisterUser(RegisterUserDto userDto)
+        public async Task<UserResponseDto> RegisterAsync(RegisterUserDto userDto)
         {
             if (await _userRepository.ExistsAsync(userDto.Username))
                 throw new BusinessException($"Username '{userDto.Username}' is already taken.");
@@ -115,7 +115,7 @@ namespace PharmaCore.Application.Services
             return _mapper.Map<UserResponseDto>(user);
         }
 
-        public async Task UpdateUserAsync(int userId, UpdateUserDto updateUserDto)
+        public async Task UpdateAsync(int userId, UpdateUserDto updateUserDto)
         {
             var currentUserId = _userContextService.GetUserId();
             var currentUserRole = _userContextService.GetUserRole();

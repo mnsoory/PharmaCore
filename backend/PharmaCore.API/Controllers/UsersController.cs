@@ -23,8 +23,8 @@ namespace PharmaCore.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] RegisterUserDto userDto)
         {
-            var newUser = await _userService.RegisterUser(userDto);
-            return CreatedAtRoute("GetById", new { id = newUser.UserId}, newUser);
+            var newUser = await _userService.RegisterAsync(userDto);
+            return CreatedAtRoute("GetUserById", new { id = newUser.UserId}, newUser);
         }
 
         [HttpPost("login")]
@@ -49,7 +49,7 @@ namespace PharmaCore.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{id}", Name = "GetById")]
+        [HttpGet("{id}", Name = "GetUserById")]
         [Authorize(Roles = "Admin,Pharmacist,Assistant")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -85,7 +85,7 @@ namespace PharmaCore.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateUserDto updateUserDto)
         {
-            await _userService.UpdateUserAsync(id, updateUserDto);
+            await _userService.UpdateAsync(id, updateUserDto);
             return NoContent();
         }
 

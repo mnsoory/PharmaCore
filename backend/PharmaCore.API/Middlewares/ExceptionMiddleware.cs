@@ -1,4 +1,5 @@
-﻿using PharmaCore.Core.Exceptions;
+﻿using Microsoft.IdentityModel.Tokens;
+using PharmaCore.Core.Exceptions;
 using System.Net;
 using System.Text.Json;
 
@@ -33,7 +34,7 @@ namespace PharmaCore.API.Middlewares
             {
                 BusinessException => (int)HttpStatusCode.BadRequest, // 400
                 NotFoundException => (int)HttpStatusCode.NotFound,   // 404
-                UnauthorizedException => (int)HttpStatusCode.Unauthorized, // 401
+                UnauthorizedException or SecurityTokenException => (int)HttpStatusCode.Unauthorized, // 401
                 _ => (int)HttpStatusCode.InternalServerError         // 500
             };
 
