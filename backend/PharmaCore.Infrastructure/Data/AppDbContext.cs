@@ -11,6 +11,7 @@ namespace PharmaCore.Infrastructure.Data
         public DbSet<User> Users { get; set; }
         public DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
         public DbSet<Drug> Drugs { get; set; }
+        public DbSet<Supplier> Suppliers { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
