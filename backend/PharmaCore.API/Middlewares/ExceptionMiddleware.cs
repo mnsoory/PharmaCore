@@ -34,6 +34,7 @@ namespace PharmaCore.API.Middlewares
             {
                 BusinessException => (int)HttpStatusCode.BadRequest, // 400
                 NotFoundException => (int)HttpStatusCode.NotFound,   // 404
+                ConflictException => (int)HttpStatusCode.Conflict,   // 409
                 UnauthorizedException or SecurityTokenException => (int)HttpStatusCode.Unauthorized, // 401
                 _ => (int)HttpStatusCode.InternalServerError         // 500
             };

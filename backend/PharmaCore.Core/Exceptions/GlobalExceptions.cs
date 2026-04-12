@@ -21,5 +21,10 @@ namespace PharmaCore.Core.Exceptions
     {
         public UnauthorizedException(string message) : base(message) { }
     }
+
+    public class ConflictException : BaseException
+    {
+        public ConflictException(string message) : base(message) { }
+    }
 }
 

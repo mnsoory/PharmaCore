@@ -48,10 +48,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IDrugRepository, DrugRepository>();
+builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 
 // Services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDrugService, DrugService>();
+builder.Services.AddScoped<ISupplierService, SupplierService>();
 
 // Mappings
 builder.Services.AddAutoMapper(cfg =>
