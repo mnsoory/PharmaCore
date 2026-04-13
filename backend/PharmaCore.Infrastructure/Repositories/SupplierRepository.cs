@@ -19,7 +19,6 @@ namespace PharmaCore.Infrastructure.Repositories
         public async Task AddAsync(Supplier supplier)
         {
             await _context.Suppliers.AddAsync(supplier);
-            await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<Supplier>> GetAllAsync()
@@ -50,10 +49,10 @@ namespace PharmaCore.Infrastructure.Repositories
                 .FirstOrDefaultAsync(s => s.SupplierId == id);
         }
 
-        public async Task UpdateAsync(Supplier supplier)
+        public Task Update(Supplier supplier)
         {
             _context.Update(supplier);
-            await _context.SaveChangesAsync();
+            return Task.CompletedTask;
         }
 
         public async Task<bool> ExistsByPhoneAsync(string phone)

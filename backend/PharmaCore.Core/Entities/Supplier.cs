@@ -9,5 +9,7 @@ namespace PharmaCore.Core.Entities
         public string Phone { get; set; } = string.Empty;
         public string Company { get; set; } = string.Empty;
         public bool IsActive { get; set; }
+
+        public virtual ICollection<PurchaseOrder> PurchaseOrders { get; set; } = new HashSet<PurchaseOrder>();
     }
 }

@@ -12,7 +12,7 @@ namespace PharmaCore.Core.Interfaces.Repositories
 
         Task<IEnumerable<Supplier>> GetAllInActiveAsync();
         Task AddAsync(Supplier supplier);
-        Task UpdateAsync(Supplier supplier);
+        Task Update(Supplier supplier);
         Task<bool> ExistsByPhoneAsync(string phone);
     }
 }
