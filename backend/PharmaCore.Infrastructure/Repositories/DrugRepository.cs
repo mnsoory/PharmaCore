@@ -19,7 +19,6 @@ namespace PharmaCore.Infrastructure.Repositories
         public async Task AddAsync(Drug drug)
         {
             await _context.Drugs.AddAsync(drug);
-            await _context.SaveChangesAsync();
         }
 
         public async Task<bool> ExistsAsync(string tradeName)
@@ -65,17 +64,10 @@ namespace PharmaCore.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task SoftDeleteAsync(int id)
-        {
-            await _context.Drugs
-                .Where(d => d.DrugId  == id)
-                .ExecuteUpdateAsync(setters => setters.SetProperty(d => d.IsDeleted, true));
-        }
-
-        public async Task UpdateAsync(Drug drug)
+        public Task Update(Drug drug)
         {
             _context.Drugs.Update(drug);
-            await _context.SaveChangesAsync();
+            return Task.CompletedTask;
         }
     }
 }

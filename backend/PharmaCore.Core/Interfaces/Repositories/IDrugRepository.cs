@@ -10,8 +10,7 @@ namespace PharmaCore.Core.Interfaces.Repositories
         Task<IEnumerable<Drug>> GetAllActiveAsync();
         Task<IEnumerable<Drug>> SearchAsync(string searchTerm);
         Task AddAsync(Drug drug);
-        Task UpdateAsync(Drug drug);
-        Task SoftDeleteAsync(int id);
+        Task Update(Drug drug);
         Task<bool> ExistsAsync(string tradeName);
 
         Task<bool> ExistsCompositeAsync(string tradeName, string? concentration, string? form, string manufacturer);

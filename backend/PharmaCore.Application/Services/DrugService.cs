@@ -4,46 +4,49 @@ using AutoMapper;
 using PharmaCore.Core.DTOs.Drug;
 using PharmaCore.Core.Entities;
 using PharmaCore.Core.Exceptions;
-using PharmaCore.Core.Interfaces.Repositories;
+using PharmaCore.Core.Interfaces;
 using PharmaCore.Core.Interfaces.Services;
 
 namespace PharmaCore.Application.Services
 {
     public class DrugService : IDrugService
     {
-        private readonly IDrugRepository _drugRepository;
+        private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
 
-        public DrugService(IDrugRepository drugRepository, IMapper mapper)
+        public DrugService(IMapper mapper, IUnitOfWork uow)
         {
-            _drugRepository = drugRepository;
             _mapper = mapper;
+            _uow = uow;
         }
 
         public async Task<DrugResponseDto> CreateAsync(CreateDrugDto createDto)
         {
-            if (await _drugRepository.ExistsCompositeAsync(createDto.TradeName, createDto.Concentration, createDto.Form, createDto.Manufacturer))
+            if (await _uow.Drugs.ExistsCompositeAsync(createDto.TradeName, createDto.Concentration, createDto.Form, createDto.Manufacturer))
                 throw new BusinessException("A drug with the same trade name, concentration, form, and manufacturer already exists.");
 
             Drug drugEntity = _mapper.Map<Drug>(createDto);
-            await _drugRepository.AddAsync(drugEntity);
+            await _uow.Drugs.AddAsync(drugEntity);
+            await _uow.CompleteAsync();
 
             return _mapper.Map<DrugResponseDto>(drugEntity);
         }
 
         public async Task DeleteAsync(int id)
         {
-            var drug = await _drugRepository.GetByIdAsync(id);
+            var drug = await _uow.Drugs.GetByIdAsync(id);
 
             if (drug == null)
                 throw new NotFoundException($"Drug with ID: {id} was not found.");
 
-            await _drugRepository.SoftDeleteAsync(id);
+            drug.IsDeleted = true;
+            await _uow.Drugs.Update(drug);
+            await _uow.CompleteAsync();
         }
 
         public async Task<IEnumerable<DrugResponseDto>> GetAllAsync()
         {
-            var drugs = await _drugRepository.GetAllActiveAsync();
+            var drugs = await _uow.Drugs.GetAllActiveAsync();
             var drugsDto = _mapper.Map<IEnumerable<DrugResponseDto>>(drugs);
 
             return drugsDto;
@@ -51,7 +54,7 @@ namespace PharmaCore.Application.Services
 
         public async Task<DrugResponseDto?> GetByIdAsync(int id)
         {
-            var drug = await _drugRepository.GetByIdAsync(id);
+            var drug = await _uow.Drugs.GetByIdAsync(id);
 
             if(drug == null)
                 throw new NotFoundException($"Drug with ID: {id} was not found.");
@@ -61,12 +64,12 @@ namespace PharmaCore.Application.Services
 
         public async Task<bool> IsTradeNameExistsAsync(string tradeName)
         {
-            return await _drugRepository.ExistsAsync(tradeName);
+            return await _uow.Drugs.ExistsAsync(tradeName);
         }
 
         public async Task<IEnumerable<DrugResponseDto>> SearchAsync(string searchTerm)
         {
-            var drugs = await _drugRepository.SearchAsync(searchTerm);
+            var drugs = await _uow.Drugs.SearchAsync(searchTerm);
 
             var drugsDto = _mapper.Map<IEnumerable<DrugResponseDto>>(drugs);
 
@@ -75,14 +78,15 @@ namespace PharmaCore.Application.Services
 
         public async Task UpdateAsync(int id, UpdateDrugDto updateDto)
         {
-            var drug = await _drugRepository.GetByIdAsync(id);
+            var drug = await _uow.Drugs.GetByIdAsync(id);
 
             if (drug == null)
                 throw new NotFoundException($"Drug with ID: {id} was not found.");
 
             _mapper.Map(updateDto, drug);
 
-            await _drugRepository.UpdateAsync(drug);
+            await _uow.Drugs.Update(drug);
+            await _uow.CompleteAsync();
         }
     }
 }
