@@ -11,9 +11,7 @@ namespace PharmaCore.Core.Interfaces.Repositories
 
         Task AddAsync(User user);
 
-        Task UpdateAsync(User user);
-
-        Task DeleteAsync(User user);
+        Task Update(User user);
 
         Task<User?> GetByUsernameAsync(string username);
 

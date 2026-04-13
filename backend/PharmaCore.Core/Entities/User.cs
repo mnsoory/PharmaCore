@@ -16,5 +16,7 @@ namespace PharmaCore.Core.Entities
         public UserRole Role { get; set; } 
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
+
+        public virtual ICollection<PurchaseOrder> PurchaseOrders { get; set; } = new HashSet<PurchaseOrder>();
     }
 }

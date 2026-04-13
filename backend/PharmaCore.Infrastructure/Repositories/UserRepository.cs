@@ -18,13 +18,6 @@ namespace PharmaCore.Infrastructure.Repositories
         public async Task AddAsync(User user)
         {
             await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteAsync(User user)
-        {
-            user.IsDeleted = true;
-            await _context.SaveChangesAsync();
         }
 
         public Task<bool> ExistsAsync(string username)
@@ -55,10 +48,10 @@ namespace PharmaCore.Infrastructure.Repositories
                 .FirstOrDefaultAsync(u => u.Username == identifier || u.Email == identifier);
         }
 
-        public async Task UpdateAsync(User user)
+        public Task Update(User user)
         {
             _context.Users.Update(user);
-            await _context.SaveChangesAsync();
+            return Task.CompletedTask;
         }
 
         public async Task<bool> PhoneExistsAsync(string phone)
