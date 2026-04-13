@@ -19,7 +19,6 @@ namespace PharmaCore.Infrastructure.Repositories
         public async Task AddAsync(UserRefreshToken refreshToken)
         {
             await _context.UserRefreshTokens.AddAsync(refreshToken);
-            await _context.SaveChangesAsync();
         }
 
         public async Task<UserRefreshToken?> GetByTokenAsync(string token)
@@ -31,16 +30,20 @@ namespace PharmaCore.Infrastructure.Repositories
 
         public async Task RevokeUserTokensAsync(int userId)
         {
-            await _context.UserRefreshTokens
-            .Where(r => r.UserId == userId && !r.IsRevoked)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(r => r.IsRevoked, true));
+            var tokens = await _context.UserRefreshTokens
+                .Where(r => r.UserId == userId && !r.IsRevoked)
+                .ToListAsync();
+
+            foreach (var token in tokens)
+            {
+                token.IsRevoked = true;
+            }
         }
 
-        public async Task UpdateAsync(UserRefreshToken refreshToken)
+        public Task UpdateAsync(UserRefreshToken refreshToken)
         {
             _context.UserRefreshTokens.Update(refreshToken);
-            await _context.SaveChangesAsync();
+            return Task.CompletedTask;
         }
     }
 }
