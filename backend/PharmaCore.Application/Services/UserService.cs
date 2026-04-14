@@ -33,7 +33,7 @@ namespace PharmaCore.Application.Services
 
         public async Task<UserResponseDto> RegisterAsync(RegisterUserDto userDto)
         {
-            if (await _uow.Users.ExistsAsync(userDto.Username))
+            if (await _uow.Users.UsernameExistsAsync(userDto.Username))
                 throw new BusinessException($"Username '{userDto.Username}' is already taken.");
 
             if (await _uow.Users.EmailExistsAsync(userDto.Email))
@@ -142,7 +142,6 @@ namespace PharmaCore.Application.Services
 
             _mapper.Map(updateUserDto, user);
 
-            await _uow.Users.Update(user);
             await _uow.CompleteAsync();
         }
 
@@ -164,7 +163,6 @@ namespace PharmaCore.Application.Services
 
             user.PasswordHash = _passwordHasher.HashPassword(dto.NewPassword);
 
-            await _uow.Users.Update(user);
             await _uow.CompleteAsync();
         }
 
@@ -174,7 +172,6 @@ namespace PharmaCore.Application.Services
             if (user == null) throw new NotFoundException("User not found.");
 
             user.IsActive = !user.IsActive;
-            await _uow.Users.Update(user);
             await _uow.CompleteAsync();
 
             return user.IsActive;
@@ -186,7 +183,6 @@ namespace PharmaCore.Application.Services
             if (user == null) throw new NotFoundException("User not found.");
 
             user.IsDeleted = true;
-            await _uow.Users.Update(user);
             await _uow.CompleteAsync();
         }
 
@@ -198,7 +194,6 @@ namespace PharmaCore.Application.Services
             if (user == null) throw new NotFoundException("User not found.");
 
             user.Role = role;
-            await _uow.Users.Update(user);
             await _uow.CompleteAsync();
         }
 

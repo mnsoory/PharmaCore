@@ -10,14 +10,12 @@ namespace PharmaCore.Core.Interfaces.Repositories
         Task<IEnumerable<User>> GetAllAsync();
 
         Task AddAsync(User user);
-
-        Task Update(User user);
-
         Task<User?> GetByUsernameAsync(string username);
 
         Task<User?> GetByIdentifierAsync(string identifier);
+        Task<bool> ExistsAsync(int id);
 
-        Task<bool> ExistsAsync(string username);
+        Task<bool> UsernameExistsAsync(string username);
 
         Task<bool> PhoneExistsAsync(string phone);
 

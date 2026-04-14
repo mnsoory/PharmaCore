@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 using PharmaCore.Core.Entities;
 using PharmaCore.Core.Interfaces.Repositories;
 using PharmaCore.Infrastructure.Data;
@@ -20,7 +19,12 @@ namespace PharmaCore.Infrastructure.Repositories
             await _context.Users.AddAsync(user);
         }
 
-        public Task<bool> ExistsAsync(string username)
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.Users.AnyAsync(d => d.UserId == id);
+        }
+
+        public Task<bool> UsernameExistsAsync(string username)
         {
             return _context.Users.AnyAsync(u => u.Username == username);
         }
@@ -46,12 +50,6 @@ namespace PharmaCore.Infrastructure.Repositories
         {
             return await _context.Users
                 .FirstOrDefaultAsync(u => u.Username == identifier || u.Email == identifier);
-        }
-
-        public Task Update(User user)
-        {
-            _context.Users.Update(user);
-            return Task.CompletedTask;
         }
 
         public async Task<bool> PhoneExistsAsync(string phone)
