@@ -21,7 +21,7 @@ namespace PharmaCore.Infrastructure.Repositories
             await _context.Drugs.AddAsync(drug);
         }
 
-        public async Task<bool> ExistsAsync(string tradeName)
+        public async Task<bool> TradeNameExistsAsync(string tradeName)
         {
             return await _context.Drugs.AnyAsync(d => d.TradeName == tradeName.Trim());
         }
@@ -64,10 +64,19 @@ namespace PharmaCore.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public Task Update(Drug drug)
+        public async Task<bool> ExistsAsync(int id)
         {
-            _context.Drugs.Update(drug);
-            return Task.CompletedTask;
+            return await _context.Drugs.AnyAsync(d => d.DrugId == id);
+        }
+
+        public async Task<int> CountByIdsAsync(ICollection<int> drugIds)
+        {
+            if (drugIds == null || drugIds.Count() == 0)
+                return 0;
+
+            return await _context.Drugs
+                .Where(d => drugIds.Contains(d.DrugId))
+                .CountAsync();
         }
     }
 }

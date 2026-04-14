@@ -40,7 +40,6 @@ namespace PharmaCore.Application.Services
                 throw new NotFoundException($"Drug with ID: {id} was not found.");
 
             drug.IsDeleted = true;
-            await _uow.Drugs.Update(drug);
             await _uow.CompleteAsync();
         }
 
@@ -64,7 +63,7 @@ namespace PharmaCore.Application.Services
 
         public async Task<bool> IsTradeNameExistsAsync(string tradeName)
         {
-            return await _uow.Drugs.ExistsAsync(tradeName);
+            return await _uow.Drugs.TradeNameExistsAsync(tradeName);
         }
 
         public async Task<IEnumerable<DrugResponseDto>> SearchAsync(string searchTerm)
@@ -85,7 +84,6 @@ namespace PharmaCore.Application.Services
 
             _mapper.Map(updateDto, drug);
 
-            await _uow.Drugs.Update(drug);
             await _uow.CompleteAsync();
         }
     }
