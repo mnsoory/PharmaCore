@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using PharmaCore.API.Middlewares;
 using PharmaCore.Application.Mappings;
 using PharmaCore.Application.Services;
+using PharmaCore.Core.Interfaces;
 using PharmaCore.Core.Interfaces.Repositories;
 using PharmaCore.Core.Interfaces.Security;
 using PharmaCore.Core.Interfaces.Services;
@@ -49,11 +50,16 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IDrugRepository, DrugRepository>();
 builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
+builder.Services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
+
+// UOW
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDrugService, DrugService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
+builder.Services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
 
 // Mappings
 builder.Services.AddAutoMapper(cfg =>
