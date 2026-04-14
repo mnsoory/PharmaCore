@@ -44,7 +44,6 @@ namespace PharmaCore.Application.Services
                 throw new NotFoundException("Supplier not found.");
 
             supplier.IsActive = !supplier.IsActive;
-            await _uow.Suppliers.Update(supplier);
             await _uow.CompleteAsync();
 
             return supplier.IsActive;
@@ -84,7 +83,6 @@ namespace PharmaCore.Application.Services
                 throw new NotFoundException($"Supplier with ID: {id} was not found.");
 
             _mapper.Map(updateDto, supplier);
-            await _uow.Suppliers.Update(supplier);
             await _uow.CompleteAsync();
         }
     }

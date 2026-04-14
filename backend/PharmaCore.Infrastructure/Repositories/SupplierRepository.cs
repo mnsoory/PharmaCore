@@ -49,17 +49,16 @@ namespace PharmaCore.Infrastructure.Repositories
                 .FirstOrDefaultAsync(s => s.SupplierId == id);
         }
 
-        public Task Update(Supplier supplier)
-        {
-            _context.Update(supplier);
-            return Task.CompletedTask;
-        }
-
         public async Task<bool> ExistsByPhoneAsync(string phone)
         {
             return await _context.Suppliers
                 .IgnoreQueryFilters()
                 .AnyAsync(s => s.Phone == phone);
+        }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.Suppliers.AnyAsync(d => d.SupplierId == id);
         }
     }
 }
