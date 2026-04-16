@@ -10,7 +10,6 @@ namespace PharmaCore.Core.Interfaces.Repositories
         Task<IEnumerable<StockBatch>> GetExpiredBatchesAsync();
         Task AddAsync(StockBatch batch);
         Task AddRangeAsync(IEnumerable<StockBatch> batches);
-        void Update(StockBatch batch);
         Task<bool> HasAnyUsageByItemsAsync(List<int> itemIds);
         Task<IEnumerable<StockBatch>> GetByItemIdsAsync(List<int> itemIds);
         void RemoveRange(IEnumerable<StockBatch> batches);

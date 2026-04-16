@@ -45,20 +45,6 @@ namespace PharmaCore.Application.Services
             return _mapper.Map<IEnumerable<StockBatchResponseDto>>(batches);
         }
 
-        public async Task UpdateRemainingQuantityAsync(int batchId, int quantityToSubtract)
-        {
-            var batch = await _uow.StockBatches.GetByIdAsync(batchId);
-            if (batch == null)
-                throw new NotFoundException("Stock batch not found.");
-
-            if (batch.RemainingQty < quantityToSubtract)
-                throw new BusinessException($"Insufficient quantity in batch {batch.BatchNumber}. Available: {batch.RemainingQty}");
-
-            batch.RemainingQty -= quantityToSubtract;
-            _uow.StockBatches.Update(batch);
-            await _uow.CompleteAsync();
-        }
-
         public async Task<StockBatch> CreateBatchEntityAsync(CreateStockBatchInternalDto dto)
         {
             if (dto.ExpiryDate <= dto.ProductionDate)

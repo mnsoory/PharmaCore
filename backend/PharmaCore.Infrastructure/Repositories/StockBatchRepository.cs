@@ -27,6 +27,8 @@ namespace PharmaCore.Infrastructure.Repositories
             return await _context.StockBatches
                 .Where(b => b.DrugId == drugId)
                 .OrderBy(b => b.ExpiryDate)
+                .Include(b => b.Drug)
+                .Include(b => b.Supplier)
                 .ToListAsync();
         }
 
@@ -55,10 +57,6 @@ namespace PharmaCore.Infrastructure.Repositories
             await _context.StockBatches.AddRangeAsync(batches);
         }
 
-        public void Update(StockBatch batch)
-        {
-            _context.StockBatches.Update(batch);
-        }
 
         public async Task<bool> HasAnyUsageByItemsAsync(List<int> itemIds)
         {

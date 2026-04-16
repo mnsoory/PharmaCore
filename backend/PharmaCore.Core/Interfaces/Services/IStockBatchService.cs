@@ -9,7 +9,6 @@ namespace PharmaCore.Core.Interfaces.Services
         Task<IEnumerable<StockBatchResponseDto>> GetByDrugIdAsync(int drugId);
         Task<IEnumerable<StockBatchResponseDto>> GetAvailableBatchesForSaleAsync(int drugId);
         Task<IEnumerable<StockBatchResponseDto>> GetExpiredBatchesAsync();
-        Task UpdateRemainingQuantityAsync(int batchId, int quantityToSubtract);
         Task<StockBatch> CreateBatchEntityAsync(CreateStockBatchInternalDto dto);
     }
 }
