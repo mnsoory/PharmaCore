@@ -58,7 +58,7 @@ namespace PharmaCore.Infrastructure.Repositories
 
         public async Task<bool> PurchaseOrderItemIdExistsAsync(int purchaseOrderId, int purchaseOrderItemId)
         {
-            return await _context.purchaseOrderItems
+            return await _context.PurchaseOrderItems
                 .AnyAsync(p => p.PurchaseOrderId == purchaseOrderId && p.PurchaseOrderItemId == purchaseOrderItemId);
         }
     }
