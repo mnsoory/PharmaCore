@@ -10,6 +10,7 @@ namespace PharmaCore.Core.Interfaces
         IDrugRepository Drugs { get; }
         ISupplierRepository Suppliers { get; }
         IPurchaseOrderRepository PurchaseOrders { get; }
+        IStockBatchRepository StockBatches { get; }
 
         Task<int> CompleteAsync(); 
 
