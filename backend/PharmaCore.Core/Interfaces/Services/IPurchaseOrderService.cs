@@ -10,6 +10,6 @@ namespace PharmaCore.Core.Interfaces.Services
         Task<PurchaseOrderResponseDto> GetByIdAsync(int id);
         Task<IEnumerable<PurchaseOrderResponseDto>> GetAllAsync();
         Task<PurchaseOrderResponseDto> CreateAsync(CreatePurchaseOrderDto createDto);
-        Task UpdateStatusAsync(int id, PurchaseOrderStatus newStatus);
+        Task UpdateStatusAsync(int id, PurchaseOrderUpdateStatusDto updateDto);
     }
 }
