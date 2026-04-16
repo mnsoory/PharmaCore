@@ -11,5 +11,6 @@ namespace PharmaCore.Core.Entities
         public bool IsActive { get; set; }
 
         public virtual ICollection<PurchaseOrder> PurchaseOrders { get; set; } = new HashSet<PurchaseOrder>();
+        public virtual ICollection<StockBatch> StockBatches { get; set; } = new HashSet<StockBatch>();
     }
 }
