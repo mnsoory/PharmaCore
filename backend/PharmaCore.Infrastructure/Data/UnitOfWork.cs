@@ -20,6 +20,7 @@ namespace PharmaCore.Infrastructure.Data
             Suppliers = new SupplierRepository(_context);
             PurchaseOrders = new PurchaseOrderRepository(_context);
             StockBatches = new StockBatchRepository(_context);
+            StockAdjustments = new StockAdjustmentRepository(_context);
         }
 
         public IUserRepository Users { get; private set; }
@@ -28,6 +29,7 @@ namespace PharmaCore.Infrastructure.Data
         public ISupplierRepository Suppliers { get; private set; }
         public IPurchaseOrderRepository PurchaseOrders { get; private set; }
         public IStockBatchRepository StockBatches { get; private set; }
+        public IStockAdjustmentRepository StockAdjustments { get; private set; }
 
         public async Task<int> CompleteAsync()
         {
