@@ -4,6 +4,7 @@ namespace PharmaCore.Core.DTOs.PurchaseOrderItem
 {
     public class PurchaseOrderItemResponseDto
     {
+        public int PurchaseOrderItemId { get; set; }
         public int DrugId { get; set; }
         public string DrugName { get; set; } = string.Empty;
         public int Quantity { get; set; }
