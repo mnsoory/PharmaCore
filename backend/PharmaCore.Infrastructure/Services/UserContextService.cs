@@ -1,6 +1,7 @@
 ﻿
 
 using Microsoft.AspNetCore.Http;
+using PharmaCore.Core.Exceptions;
 using PharmaCore.Core.Interfaces.Services;
 using System.Security.Claims;
 
@@ -17,13 +18,26 @@ namespace PharmaCore.Infrastructure.Services
 
         public int GetUserId()
         {
-            var userId = _contextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-            return int.TryParse(userId, out int id) ? id : 0;
+            var userIdClaim = _contextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int id))
+            {
+                throw new UnauthorizedException("User identification is missing or invalid in the current context.");
+            }
+
+            return id;
         }
 
-        public string? GetUserRole()
+        public string GetUserRole()
         {
-            return _contextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Role);
+            var role = _contextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Role);
+
+            if (string.IsNullOrEmpty(role))
+            {
+                throw new UnauthorizedException("User role is missing in the current context.");
+            }
+
+            return role;
         }
     }
 }
