@@ -33,7 +33,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString, sqlOptions =>
     {
         sqlOptions.CommandTimeout(60);
-        sqlOptions.EnableRetryOnFailure(3, TimeSpan.FromSeconds(5), null);
+        //sqlOptions.EnableRetryOnFailure(3, TimeSpan.FromSeconds(5), null);
     });
 
     if (builder.Environment.IsDevelopment())
@@ -51,6 +51,7 @@ builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IDrugRepository, DrugRepository>();
 builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 builder.Services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
+builder.Services.AddScoped<IStockBatchRepository, StockBatchRepository>();
 
 // UOW
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -60,6 +61,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDrugService, DrugService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
+builder.Services.AddScoped<IStockBatchService, StockBatchService>();
 
 // Mappings
 builder.Services.AddAutoMapper(cfg =>
