@@ -133,6 +133,11 @@ namespace PharmaCore.Infrastructure.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<int>("ReceivedQuantity")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.Property<decimal>("UnitPrice")
                         .HasColumnType("decimal(18,2)");
 
@@ -142,7 +147,62 @@ namespace PharmaCore.Infrastructure.Migrations
 
                     b.HasIndex("PurchaseOrderId");
 
-                    b.ToTable("PurchaseOrderItems", (string)null);
+                    b.ToTable("PurchaseOrderItems", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_PurchaseOrderItem_ReceivedQuantity_Range", "[ReceivedQuantity] >= 0 AND [ReceivedQuantity] <= [Quantity]");
+                        });
+                });
+
+            modelBuilder.Entity("PharmaCore.Core.Entities.StockBatch", b =>
+                {
+                    b.Property<int>("StockBatchId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StockBatchId"));
+
+                    b.Property<string>("BatchNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("DrugId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ProductionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PurchaseOrderItemId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("PurchasePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RemainingQty")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.HasKey("StockBatchId");
+
+                    b.HasIndex("PurchaseOrderItemId");
+
+                    b.HasIndex("SupplierId");
+
+                    b.HasIndex("DrugId", "ExpiryDate")
+                        .HasDatabaseName("IX_StockBatches_DrugId_ExpiryDate");
+
+                    b.HasIndex("DrugId", "ExpiryDate", "RemainingQty")
+                        .HasDatabaseName("IX_StockBatches_DrugId_ExpiryDate_RemainingQty");
+
+                    b.ToTable("StockBatches", (string)null);
                 });
 
             modelBuilder.Entity("PharmaCore.Core.Entities.Supplier", b =>
@@ -337,6 +397,33 @@ namespace PharmaCore.Infrastructure.Migrations
                     b.Navigation("PurchaseOrder");
                 });
 
+            modelBuilder.Entity("PharmaCore.Core.Entities.StockBatch", b =>
+                {
+                    b.HasOne("PharmaCore.Core.Entities.Drug", "Drug")
+                        .WithMany("StockBatches")
+                        .HasForeignKey("DrugId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PharmaCore.Core.Entities.PurchaseOrderItem", "PurchaseOrderItem")
+                        .WithMany()
+                        .HasForeignKey("PurchaseOrderItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PharmaCore.Core.Entities.Supplier", "Supplier")
+                        .WithMany("StockBatches")
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Drug");
+
+                    b.Navigation("PurchaseOrderItem");
+
+                    b.Navigation("Supplier");
+                });
+
             modelBuilder.Entity("PharmaCore.Core.Entities.UserRefreshToken", b =>
                 {
                     b.HasOne("PharmaCore.Core.Entities.User", "User")
@@ -348,6 +435,11 @@ namespace PharmaCore.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("PharmaCore.Core.Entities.Drug", b =>
+                {
+                    b.Navigation("StockBatches");
+                });
+
             modelBuilder.Entity("PharmaCore.Core.Entities.PurchaseOrder", b =>
                 {
                     b.Navigation("Items");
@@ -356,6 +448,8 @@ namespace PharmaCore.Infrastructure.Migrations
             modelBuilder.Entity("PharmaCore.Core.Entities.Supplier", b =>
                 {
                     b.Navigation("PurchaseOrders");
+
+                    b.Navigation("StockBatches");
                 });
 
             modelBuilder.Entity("PharmaCore.Core.Entities.User", b =>

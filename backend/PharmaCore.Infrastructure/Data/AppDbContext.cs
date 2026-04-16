@@ -13,6 +13,8 @@ namespace PharmaCore.Infrastructure.Data
         public DbSet<Drug> Drugs { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<PurchaseOrder> PurchaseOrders { get; set; }
+        public DbSet<StockBatch> StockBatches { get; set; }
+        public DbSet<PurchaseOrderItem> purchaseOrderItems { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
