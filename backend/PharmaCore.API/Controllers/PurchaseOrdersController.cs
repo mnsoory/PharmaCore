@@ -45,9 +45,9 @@ namespace PharmaCore.API.Controllers
         [HttpPatch("{id}/status")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> UpdateStatus(int id, [FromBody] PurchaseOrderStatus status)
+        public async Task<ActionResult> UpdateStatus(int id, [FromBody] PurchaseOrderUpdateStatusDto updateStatusDto)
         {
-            await _orderService.UpdateStatusAsync(id, status);
+            await _orderService.UpdateStatusAsync(id, updateStatusDto);
             return NoContent();
         }
     }
