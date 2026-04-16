@@ -41,7 +41,6 @@ namespace PharmaCore.Infrastructure.Repositories
         public async Task<PurchaseOrder?> GetWithDetailsAsync(int id)
         {
             return await _context.PurchaseOrders
-                .AsNoTracking()
                 .Include(p => p.User)
                 .Include(p => p.Supplier)
                 .Include(p => p.Items)
@@ -57,6 +56,10 @@ namespace PharmaCore.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        
+        public async Task<bool> PurchaseOrderItemIdExistsAsync(int purchaseOrderId, int purchaseOrderItemId)
+        {
+            return await _context.purchaseOrderItems
+                .AnyAsync(p => p.PurchaseOrderId == purchaseOrderId && p.PurchaseOrderItemId == purchaseOrderItemId);
+        }
     }
 }
