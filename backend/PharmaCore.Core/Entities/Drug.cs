@@ -16,5 +16,6 @@ namespace PharmaCore.Core.Entities
         public bool IsDeleted { get; set; }
 
         public virtual ICollection<StockBatch> StockBatches { get; set; } = new HashSet<StockBatch>();
+        public ICollection<DrugAlternative> Alternatives { get; set; } = new HashSet<DrugAlternative>();
     }
 }
