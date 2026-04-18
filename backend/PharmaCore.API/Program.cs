@@ -55,6 +55,7 @@ builder.Services.AddScoped<IStockBatchRepository, StockBatchRepository>();
 builder.Services.AddScoped<IStockAdjustmentRepository, StockAdjustmentRepository>();
 builder.Services.AddScoped<ISaleRepository, SaleRepository>();
 builder.Services.AddScoped<ISaleCancellationRepository, SaleCancellationRepository>();
+builder.Services.AddScoped<IDrugAlternativeRepository, DrugAlternativeRepository>();
 
 // UOW
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -68,6 +69,7 @@ builder.Services.AddScoped<IStockBatchService, StockBatchService>();
 builder.Services.AddScoped<IStockAdjustmentService, StockAdjustmentService>();
 builder.Services.AddScoped<ISaleService, SaleService>();
 builder.Services.AddScoped<ISaleCancellationService, SaleCancellationService>();
+builder.Services.AddScoped<IDrugAlternativeService, DrugAlternativeService>();
 
 // Mappings
 builder.Services.AddAutoMapper(cfg =>
