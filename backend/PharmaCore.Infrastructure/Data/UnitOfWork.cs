@@ -23,6 +23,7 @@ namespace PharmaCore.Infrastructure.Data
             StockAdjustments = new StockAdjustmentRepository(_context);
             Sales = new SaleRepository(_context);
             SaleCancellations = new SaleCancellationRepository(_context);
+            DrugAlternatives = new DrugAlternativeRepository(_context);
         }
 
         public IUserRepository Users { get; private set; }
@@ -34,6 +35,7 @@ namespace PharmaCore.Infrastructure.Data
         public IStockAdjustmentRepository StockAdjustments { get; private set; }
         public ISaleRepository Sales { get; private set; }
         public ISaleCancellationRepository SaleCancellations { get; private set; }
+        public IDrugAlternativeRepository DrugAlternatives { get; private set; }
 
         public async Task<int> CompleteAsync()
         {
