@@ -38,6 +38,13 @@ namespace PharmaCore.Infrastructure.Repositories
             return await _context.SaleCancellations
                 .AsNoTracking()
                 .Include(sc => sc.Sale)
+                    .ThenInclude(sc => sc.User)
+                .Include(sc => sc.Sale)
+                    .ThenInclude(sc => sc.SaleItems)
+                        .ThenInclude(si => si.Drug)
+                .Include(sc => sc.Sale)
+                    .ThenInclude(sc => sc.SaleItems)
+                        .ThenInclude(si => si.Batch)
                 .ToListAsync();
         }
     }
