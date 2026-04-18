@@ -13,6 +13,7 @@ namespace PharmaCore.Core.Interfaces
         IStockBatchRepository StockBatches { get; }
         IStockAdjustmentRepository StockAdjustments { get; }
         ISaleRepository Sales { get; }
+        ISaleCancellationRepository SaleCancellations { get; }
 
         Task<int> CompleteAsync();
         Task BeginTransactionAsync();
