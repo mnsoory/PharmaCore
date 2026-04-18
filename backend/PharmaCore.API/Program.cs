@@ -53,6 +53,7 @@ builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 builder.Services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
 builder.Services.AddScoped<IStockBatchRepository, StockBatchRepository>();
 builder.Services.AddScoped<IStockAdjustmentRepository, StockAdjustmentRepository>();
+builder.Services.AddScoped<ISaleRepository, SaleRepository>();
 
 // UOW
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -64,6 +65,7 @@ builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
 builder.Services.AddScoped<IStockBatchService, StockBatchService>();
 builder.Services.AddScoped<IStockAdjustmentService, StockAdjustmentService>();
+builder.Services.AddScoped<ISaleService, SaleService>();
 
 // Mappings
 builder.Services.AddAutoMapper(cfg =>
