@@ -16,19 +16,18 @@ namespace PharmaCore.Application.Services
         private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
         private readonly IStockBatchService _stockBatchService;
+        private readonly IUserContextService _userContextService;
 
-        public PurchaseOrderService(IUnitOfWork uow, IMapper mapper, IStockBatchService stockBatchService)
+        public PurchaseOrderService(IUnitOfWork uow, IMapper mapper, IStockBatchService stockBatchService, IUserContextService userContextService)
         {
             _uow = uow;
             _mapper = mapper;
             _stockBatchService = stockBatchService;
+            _userContextService = userContextService;
         }
 
         public async Task<PurchaseOrderResponseDto> CreateAsync(CreatePurchaseOrderDto createDto)
         {
-            if (!await _uow.Users.ExistsAsync(createDto.UserId))
-                throw new BusinessException("User not found");
-
             if (!await _uow.Suppliers.ExistsAsync(createDto.SupplierId))
                 throw new BusinessException("Supplier not found");
 
@@ -40,6 +39,7 @@ namespace PharmaCore.Application.Services
 
             var purchaseOrder = _mapper.Map<PurchaseOrder>(createDto);
 
+            purchaseOrder.UserId = _userContextService.GetUserId();
             purchaseOrder.Status = PurchaseOrderStatus.Pending;
 
             await _uow.PurchaseOrders.AddAsync(purchaseOrder);

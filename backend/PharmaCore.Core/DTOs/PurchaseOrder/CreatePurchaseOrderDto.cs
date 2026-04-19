@@ -7,9 +7,6 @@ namespace PharmaCore.Core.DTOs.PurchaseOrder
 {
     public class CreatePurchaseOrderDto
     {
-        [Required(ErrorMessage = "User ID is required")]
-        public int UserId { get; set; }
-
         [Required(ErrorMessage = "Supplier ID is required")]
         public int SupplierId { get; set; }
 
