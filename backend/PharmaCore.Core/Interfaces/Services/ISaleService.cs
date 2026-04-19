@@ -15,9 +15,7 @@ namespace PharmaCore.Core.Interfaces.Services
 
         Task<IEnumerable<SaleResponseDto>> GetSalesReportAsync(DateTime from, DateTime to);
 
-        Task<decimal> GetRevenueReportAsync(DateTime from, DateTime to);
-
-        Task<int> GetSalesCountReportAsync(DateTime from, DateTime to);
+        Task<SalesSummaryDto> GetSalesSummaryAsync(DateTime from, DateTime to);
 
         Task<IEnumerable<SaleResponseDto>> GetAllSalesAsync();
     }

@@ -88,14 +88,16 @@ namespace PharmaCore.Application.Services
             return _mapper.Map<IEnumerable<SaleResponseDto>>(sales);
         }
 
-        public async Task<decimal> GetRevenueReportAsync(DateTime from, DateTime to)
+        public async Task<SalesSummaryDto> GetSalesSummaryAsync(DateTime from, DateTime to)
         {
-            return await _uow.Sales.GetTotalRevenueAsync(from, to);
-        }
+            var revenue = await _uow.Sales.GetTotalRevenueAsync(from, to);
+            var count = await _uow.Sales.GetSalesCountAsync(from, to);
 
-        public async Task<int> GetSalesCountReportAsync(DateTime from, DateTime to)
-        {
-            return await _uow.Sales.GetSalesCountAsync(from, to);
+            return new SalesSummaryDto
+            {
+                TotalRevenue = revenue,
+                SalesCount = count
+            };
         }
 
         public async Task<IEnumerable<SaleResponseDto>> GetAllSalesAsync()

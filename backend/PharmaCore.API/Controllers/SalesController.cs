@@ -73,21 +73,12 @@ namespace PharmaCore.API.Controllers
             return Ok(result);
         }
 
-        //[Authorize(Roles = "Admin")]
-        [HttpGet("revenue")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<decimal>> GetRevenue([FromQuery] DateTime from, [FromQuery] DateTime to)
+        // [Authorize(Roles = "Admin")]
+        [HttpGet("summary")]
+        [ProducesResponseType(typeof(SalesSummaryDto), StatusCodes.Status200OK)]
+        public async Task<ActionResult<SalesSummaryDto>> GetSalesSummary([FromQuery] DateTime from, [FromQuery] DateTime to)
         {
-            var result = await _saleService.GetRevenueReportAsync(from, to);
-            return Ok(result);
-        }
-
-        //[Authorize(Roles = "Admin")]
-        [HttpGet("count")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<int>> GetCount([FromQuery] DateTime from, [FromQuery] DateTime to)
-        {
-            var result = await _saleService.GetSalesCountReportAsync(from, to);
+            var result = await _saleService.GetSalesSummaryAsync(from, to);
             return Ok(result);
         }
     }
