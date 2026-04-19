@@ -48,5 +48,20 @@ namespace PharmaCore.Api.Controllers
             return Ok(result);
         }
 
+        [HttpGet("expiring-soon")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<ExpiringBatchesDto>> GetExpiringCategorized()
+        {
+            var result = await _stockBatchService.GetExpiringBatchesCategorizedAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("low-stock")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<LowStockDrugDto>>> GetLowStock()
+        {
+            var result = await _stockBatchService.GetLowStockDrugsAsync();
+            return Ok(result);
+        }
     }
 }
