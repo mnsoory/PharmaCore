@@ -20,6 +20,7 @@ namespace PharmaCore.Infrastructure.Data
         public DbSet<SaleItem> SaleItems { get; set; }
         public DbSet<SaleCancellation> SaleCancellations { get; set; }
         public DbSet<DrugAlternative> DrugAlternatives { get; set; }
+        public DbSet<StockSetting> StockSettings { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

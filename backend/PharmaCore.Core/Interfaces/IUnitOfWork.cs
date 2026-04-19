@@ -15,6 +15,7 @@ namespace PharmaCore.Core.Interfaces
         ISaleRepository Sales { get; }
         ISaleCancellationRepository SaleCancellations { get; }
         IDrugAlternativeRepository DrugAlternatives { get; }
+        IStockSettingRepository StockSettings { get; }
 
         Task<int> CompleteAsync();
         Task BeginTransactionAsync();
