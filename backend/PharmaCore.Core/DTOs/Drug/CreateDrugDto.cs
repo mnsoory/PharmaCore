@@ -1,5 +1,6 @@
 ﻿
 
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace PharmaCore.Core.DTOs.Drug
@@ -28,5 +29,7 @@ namespace PharmaCore.Core.DTOs.Drug
         public string? Category { get; set; }
 
         public bool RequiresPrescription { get; set; }
+
+        public int? MinimumStock { get; set; }
     }
 }

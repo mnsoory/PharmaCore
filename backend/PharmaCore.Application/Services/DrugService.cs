@@ -27,6 +27,12 @@ namespace PharmaCore.Application.Services
 
             Drug drugEntity = _mapper.Map<Drug>(createDto);
             await _uow.Drugs.AddAsync(drugEntity);
+
+            drugEntity.StockSetting = new StockSetting
+            {
+                MinimumStock = createDto.MinimumStock ?? 10
+            };
+
             await _uow.CompleteAsync();
 
             return _mapper.Map<DrugResponseDto>(drugEntity);
