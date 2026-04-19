@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using PharmaCore.Core.DTOs.StockBatch;
 using PharmaCore.Core.Entities;
 using PharmaCore.Core.Exceptions;
@@ -71,6 +72,35 @@ namespace PharmaCore.Application.Services
                 ExpiryDate = dto.ExpiryDate,
                 ProductionDate = dto.ProductionDate
             };
+        }
+
+        public async Task<ExpiringBatchesDto> GetExpiringBatchesCategorizedAsync()
+        {
+            var allBatches = await _uow.StockBatches.GetAllExpiringSoonAsync(90);
+            var today = DateTime.UtcNow;
+
+            var result = new ExpiringBatchesDto
+            {
+                Within30Days = _mapper.Map<List<StockBatchResponseDto>>(
+                    allBatches.Where(b => b.ExpiryDate <= today.AddDays(30))),
+
+                Within60Days = _mapper.Map<List<StockBatchResponseDto>>(
+                    allBatches.Where(b => b.ExpiryDate > today.AddDays(30) && b.ExpiryDate <= today.AddDays(60))),
+
+                Within90Days = _mapper.Map<List<StockBatchResponseDto>>(
+                    allBatches.Where(b => b.ExpiryDate > today.AddDays(60) && b.ExpiryDate <= today.AddDays(90)))
+            };
+
+            return result;
+        }
+
+        public async Task<IEnumerable<LowStockDrugDto>> GetLowStockDrugsAsync()
+        {
+            var query = _uow.Drugs.GetQueryable()
+                .ProjectTo<LowStockDrugDto>(_mapper.ConfigurationProvider)
+                .Where(x => x.CurrentStock <= x.MinimumStockThreshold);
+
+            return await Task.Run(() => query.ToList());
         }
     }
 }
