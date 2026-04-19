@@ -61,7 +61,7 @@ namespace PharmaCore.API.Controllers
             return NoContent(); 
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{id}/status")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<bool>> ToggleStatusAsync(int id) 
