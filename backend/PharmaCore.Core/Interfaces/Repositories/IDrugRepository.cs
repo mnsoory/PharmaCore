@@ -15,5 +15,7 @@ namespace PharmaCore.Core.Interfaces.Repositories
         Task<bool> ExistsCompositeAsync(string tradeName, string? concentration, string? form, string manufacturer);
 
         Task<int> CountByIdsAsync(ICollection<int> drugIds);
+        Task<IEnumerable<Drug>> GetAllWithSettingsAndBatchesAsync();
+        IQueryable<Drug> GetQueryable();
     }
 }

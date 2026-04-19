@@ -15,6 +15,7 @@ namespace PharmaCore.Core.Entities
         public bool RequiresPrescription { get; set; }
         public bool IsDeleted { get; set; }
 
+        public virtual StockSetting? StockSetting { get; set; }
         public virtual ICollection<StockBatch> StockBatches { get; set; } = new HashSet<StockBatch>();
         public ICollection<DrugAlternative> Alternatives { get; set; } = new HashSet<DrugAlternative>();
     }

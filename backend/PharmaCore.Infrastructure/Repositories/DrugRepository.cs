@@ -78,5 +78,20 @@ namespace PharmaCore.Infrastructure.Repositories
                 .Where(d => drugIds.Contains(d.DrugId))
                 .CountAsync();
         }
+
+        public async Task<IEnumerable<Drug>> GetAllWithSettingsAndBatchesAsync()
+        {
+            return await _context.Drugs
+                .AsNoTracking()
+                .Include(d => d.StockBatches)
+                .Include(d => d.StockSetting)
+                .ToListAsync();
+        }
+
+        public IQueryable<Drug> GetQueryable()
+        {
+            return _context.Drugs.AsQueryable()
+                .AsNoTracking();
+        }
     }
 }
