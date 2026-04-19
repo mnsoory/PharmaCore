@@ -13,5 +13,6 @@ namespace PharmaCore.Core.Interfaces.Repositories
         Task<bool> HasAnyUsageByItemsAsync(List<int> itemIds);
         Task<IEnumerable<StockBatch>> GetByItemIdsAsync(List<int> itemIds);
         void RemoveRange(IEnumerable<StockBatch> batches);
+        Task<IEnumerable<StockBatch>> GetAllExpiringSoonAsync(int maxDays);
     }
 }

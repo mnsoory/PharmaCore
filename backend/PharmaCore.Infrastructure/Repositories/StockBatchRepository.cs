@@ -75,5 +75,19 @@ namespace PharmaCore.Infrastructure.Repositories
         {
             _context.StockBatches.RemoveRange(batches);
         }
+
+        public async Task<IEnumerable<StockBatch>> GetAllExpiringSoonAsync(int maxDays)
+        {
+            var thresholdDate = DateTime.UtcNow.AddDays(maxDays);
+            return await _context.StockBatches
+                .AsNoTracking()
+                .Include(b => b.Drug)
+                .Include(b => b.Supplier)
+                .Where(b => b.ExpiryDate <= thresholdDate
+                         && b.ExpiryDate > DateTime.UtcNow
+                         && b.Quantity > 0)
+                .OrderBy(b => b.ExpiryDate)
+                .ToListAsync();
+        }
     }
 }
