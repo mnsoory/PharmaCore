@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Lobster:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet');
+@import "tailwindcss";
+
+@theme {
+  --color-pharm-dark: #0a2121;
+  --color-app-bg: #91969d;
+  --color-page-bg: #edf3f3;
+  --color-card-green: #d7f1b9;
+  --color-card-cyan: #cff1ed;
+  --color-card-red: #fcdede;
+
+  --font-sans: "Inter", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-logo: "Lobster", sans-serif;
+  --font-dancing: "Dancing Script", cursive;
+  --font-lobster: "Lobster", display;
+  --font-lobstertwo: "Lobster Two", ital;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
