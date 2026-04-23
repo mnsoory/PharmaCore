@@ -41,13 +41,24 @@ const LoginCard: React.FC = () => {
 
       navigate("/dashboard");
     } catch (err: unknown) {
+      if (e) e.preventDefault();
+
       if (axios.isAxiosError(err)) {
-        setError(
-          err.response?.data?.message ||
-            "Invalid credentials, please try again.",
-        );
-      } else {
-        setError("An unexpected error occurred. Please contact support.");
+        const status = err.response?.status;
+
+        const serverMessage = err.response?.data?.Message;
+
+        if (serverMessage) {
+          setError(serverMessage);
+        } else if (status === 401) {
+          setError("Invalid username or password.");
+        } else if (status === 429) {
+          setError("Too many attempts. Please try again later.");
+        } else if (err.code === "ERR_NETWORK") {
+          setError("Connection failed. Check your internet or CORS settings.");
+        } else {
+          setError("Login failed. Please try again.");
+        }
       }
     } finally {
       setIsLoading(false);
