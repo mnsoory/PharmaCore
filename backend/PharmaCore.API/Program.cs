@@ -105,11 +105,10 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins("http://localhost:5173")
               .AllowAnyMethod()
-              .AllowAnyHeader();
-              //.AllowCredentials();
-               //.WithOrigins("http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowCredentials();
     });
 });
 
@@ -169,12 +168,13 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseCors();
 }
 
 app.UseHttpsRedirection();
 
 app.UseRateLimiter();
+
+app.UseCors();
 
 app.UseAuthentication();
 

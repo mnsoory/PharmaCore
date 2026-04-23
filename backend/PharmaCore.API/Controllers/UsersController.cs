@@ -44,6 +44,9 @@ namespace PharmaCore.API.Controllers
                 Expires = DateTime.UtcNow.AddDays(7)
             };
 
+            if (loginDto.RememberMe)
+                cookieOptions.Expires = DateTime.UtcNow.AddDays(7);
+
             Response.Cookies.Append("refreshToken", result.RefreshToken, cookieOptions);
 
             return Ok(result);
@@ -140,7 +143,7 @@ namespace PharmaCore.API.Controllers
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.Lax,
                 Expires = DateTime.UtcNow.AddDays(7)
             };
 
@@ -149,21 +152,29 @@ namespace PharmaCore.API.Controllers
             return Ok(result);
         }
 
-        [HttpPost("revoke-token")]
+        [HttpPost("logout")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> RevokeToken()
+        public async Task<IActionResult> Logout()
         {
             var token = Request.Cookies["refreshToken"];
 
-            if (string.IsNullOrEmpty(token))
-                return BadRequest("Token is required.");
+            if (!string.IsNullOrEmpty(token))
+            {
+                await _userService.RevokeTokenAsync(token);
+            }
 
-            await _userService.RevokeTokenAsync(token);
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax, 
+                Path = "/" 
+            };
 
-            Response.Cookies.Delete("refreshToken");
+            Response.Cookies.Delete("refreshToken", cookieOptions);
 
-            return Ok(new { message = "Token revoked successfully." });
+            return Ok(new { message = "Logged out successfully." });
         }
     }
 }
