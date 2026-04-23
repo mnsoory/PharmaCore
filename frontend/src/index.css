@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Lobster:wght@700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet');
 @import "tailwindcss";
 
 @theme {
@@ -15,6 +13,24 @@
   --font-dancing: "Dancing Script", cursive;
   --font-lobster: "Lobster", display;
   --font-lobstertwo: "Lobster Two", ital;
+
+  --shadow-small: 0 2px 6px rgba(0, 0, 0, 0.05);
+  --shadow-inner-custom: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-inner-white: inset 0 2px 4px rgba(255, 255, 255, 0.8);
+  --shadow-emerald-lg: 0 10px 25px rgba(16, 185, 129, 0.3);
+
+  --animate-fade-in: fadeIn 0.3s ease-out forwards;
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
 html, body, #root {
