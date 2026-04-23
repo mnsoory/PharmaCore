@@ -28,7 +28,9 @@ axiosClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    const isLoginRequest = originalRequest.url?.includes('/users/login');
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isLoginRequest) {
       originalRequest._retry = true;
 
       try {
@@ -39,7 +41,6 @@ axiosClient.interceptors.response.use(
         );
 
         const { token } = response.data;
-
         localStorage.setItem("token", token);
 
         originalRequest.headers.Authorization = `Bearer ${token}`;
@@ -47,7 +48,6 @@ axiosClient.interceptors.response.use(
         
       } catch (refreshError) {
         useAuthStore.getState().clearAuth();
-        window.location.href = "/login";
         return Promise.reject(refreshError);
       }
     }
