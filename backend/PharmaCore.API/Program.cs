@@ -141,12 +141,17 @@ builder.Services.AddAuthentication()
 
 builder.Services.AddRateLimiter(options =>
 {
-    options.AddFixedWindowLimiter(policyName: "LoginPolicy", fixedOptions =>
+    options.AddPolicy(policyName: "LoginPolicy", context =>
     {
-        fixedOptions.PermitLimit = 5;
-        fixedOptions.Window = TimeSpan.FromMinutes(30);
-        fixedOptions.QueueLimit = 0;
-        fixedOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        return RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? context.Request.Headers.Host.ToString(),
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(30),
+                QueueLimit = 0,
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst
+            });
     });
 
     options.OnRejected = async (context, token) =>
@@ -172,9 +177,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseRateLimiter();
-
 app.UseCors();
+
+app.UseRateLimiter();
 
 app.UseAuthentication();
 
