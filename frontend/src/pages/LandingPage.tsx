@@ -1,8 +1,9 @@
 import React from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import Footer from "../components/ui/Footer";
 import dashboardImg from "../assets/dashboard-preview.png";
 import Logo from "../components/ui/Logo";
+import { useAuthStore } from "../store/useAuthStore";
 import {
   LayoutDashboard,
   ShieldCheck,
@@ -13,7 +14,8 @@ import {
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
-  
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
   const FeaturesContent = (className: string) => (
     <div className={`${className} flex flex-col gap-3`}>
       <div className="bg-white/90 backdrop-blur-sm p-4 rounded-3xl border border-white shadow-lg space-y-3">
@@ -53,7 +55,7 @@ const LandingPage: React.FC = () => {
   return (
     <div className="w-full max-w-6xl h-full bg-page-bg rounded-none md:rounded-[2.5rem] shadow-sm border border-white/50 flex flex-col overflow-hidden relative font-sans text-slate-900">
       <header className="p-4 pb-2 flex justify-between items-center shrink-0">
-        <Logo/>
+        <Logo />
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 min-h-0 overflow-y-auto lg:overflow-hidden">
@@ -81,11 +83,14 @@ const LandingPage: React.FC = () => {
           )}
         </div>
 
-        <div 
-        onClick={() => navigate('/login')}
-        className="flex flex-col items-center gap-4 w-full max-w-sm shrink-0 mb-4">
-          <button className="w-full bg-[#0a2e2f] text-white py-3 rounded-full text-lg font-semibold shadow-md hover:brightness-110 transition-all active:scale-95">
-            Enter System
+        <div className="flex flex-col items-center gap-4 w-full max-w-sm shrink-0 mb-4">
+          <button
+            className="w-full bg-[#0a2e2f] text-white py-3 rounded-full text-lg font-semibold shadow-md hover:brightness-110 transition-all active:scale-95"
+            onClick={() =>
+              isAuthenticated ? navigate("/dashboard") : navigate("/login")
+            }
+          >
+            {isAuthenticated ? "Go to Dashboard" : "Enter System"}
           </button>
 
           <div className="flex items-center gap-4 w-full text-slate-300">
