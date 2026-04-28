@@ -1,6 +1,7 @@
 ﻿
 
 using Microsoft.EntityFrameworkCore;
+using PharmaCore.Core.DTOs.Sale;
 using PharmaCore.Core.Entities;
 using PharmaCore.Core.Interfaces.Repositories;
 using PharmaCore.Infrastructure.Data;
@@ -84,6 +85,22 @@ namespace PharmaCore.Infrastructure.Repositories
         {
             return await _context.Sales
                 .CountAsync(s => s.SaleDate >= from && s.SaleDate <= to);
+        }
+
+        public async Task<IEnumerable<DailySalesDto>> GetWeeklySalesAsync()
+        {
+            var lastSevenDays = DateTime.UtcNow.Date.AddDays(-6);
+
+            return await _context.Sales
+                .Where(s => s.SaleDate >= lastSevenDays)
+                .GroupBy(s => s.SaleDate.Date)
+                .Select(g => new DailySalesDto
+                {
+                    Date = g.Key,
+                    TotalSales = g.Sum(s => s.TotalAmount)
+                })
+                .OrderBy(d => d.Date)
+                .ToListAsync();
         }
     }
 }

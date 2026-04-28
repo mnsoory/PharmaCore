@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using PharmaCore.Core.DTOs.Sale;
 using PharmaCore.Core.Entities;
-using PharmaCore.Core.Enums;
 using PharmaCore.Core.Exceptions;
 using PharmaCore.Core.Interfaces;
 using PharmaCore.Core.Interfaces.Services;
@@ -104,6 +103,25 @@ namespace PharmaCore.Application.Services
         {
             var sales = await _uow.Sales.GetAllAsync();
             return _mapper.Map<IEnumerable<SaleResponseDto>>(sales);
+        }
+
+        public async Task<IEnumerable<DailySalesDto>> GetWeeklySalesPerformanceAsync()
+        {
+            var actualSales = (await _uow.Sales.GetWeeklySalesAsync()).ToList();
+
+            var lastSevenDays = Enumerable.Range(-6, 7)
+                .Select(offset => DateTime.UtcNow.Date.AddDays(offset))
+                .ToList();
+
+            var fullWeeklySales = lastSevenDays.Select(date => new DailySalesDto
+            {
+                Date = date,
+                TotalSales = actualSales
+                    .FirstOrDefault(s => s.Date.Date == date)?
+                    .TotalSales ?? 0m 
+            }).ToList();
+
+            return fullWeeklySales;
         }
     }
 }

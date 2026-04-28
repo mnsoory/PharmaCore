@@ -18,5 +18,6 @@ namespace PharmaCore.Core.Interfaces.Services
         Task<SalesSummaryDto> GetSalesSummaryAsync(DateTime from, DateTime to);
 
         Task<IEnumerable<SaleResponseDto>> GetAllSalesAsync();
+        Task<IEnumerable<DailySalesDto>> GetWeeklySalesPerformanceAsync();
     }
 }

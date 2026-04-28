@@ -1,5 +1,6 @@
 ﻿
 
+using PharmaCore.Core.DTOs.Sale;
 using PharmaCore.Core.Entities;
 
 namespace PharmaCore.Core.Interfaces.Repositories
@@ -13,5 +14,6 @@ namespace PharmaCore.Core.Interfaces.Repositories
         Task<IEnumerable<Sale>> GetSalesByDateRangeAsync(DateTime from, DateTime to);
         Task<decimal> GetTotalRevenueAsync(DateTime from, DateTime to);
         Task<int> GetSalesCountAsync(DateTime from, DateTime to);
+        Task<IEnumerable<DailySalesDto>> GetWeeklySalesAsync();
     }
 }
