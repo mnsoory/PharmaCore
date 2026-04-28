@@ -53,6 +53,11 @@ namespace PharmaCore.Infrastructure.Data.Configurations
                 .WithMany()
                 .HasForeignKey(s => s.PurchaseOrderItemId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(s => s.SaleItems)
+                .WithOne(sup => sup.Batch)
+                .HasForeignKey(s => s.BatchId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

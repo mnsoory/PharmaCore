@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PharmaCore.Core.Entities;
+using PharmaCore.Core.Enums;
 using PharmaCore.Core.Interfaces.Repositories;
 using PharmaCore.Infrastructure.Data;
 
@@ -88,6 +89,13 @@ namespace PharmaCore.Infrastructure.Repositories
                          && b.Quantity > 0)
                 .OrderBy(b => b.ExpiryDate)
                 .ToListAsync();
+        }
+
+        public async Task<int> GetDamagedDrugsCountAsync()
+        {
+            return await _context.StockAdjustments
+                .Where(a => a.Reason == StockAdjustmentType.Damage.ToString())
+                .SumAsync(a => a.Quantity);
         }
     }
 }

@@ -18,5 +18,6 @@ namespace PharmaCore.Core.Entities
         public virtual Supplier Supplier { get; set; } = null!;
         public virtual PurchaseOrderItem PurchaseOrderItem { get; set; } = null!;
         public virtual Drug Drug { get; set; } = null!;
+        public virtual ICollection<SaleItem> SaleItems { get; set; } = new HashSet<SaleItem>();
     }
 }
