@@ -92,5 +92,19 @@ namespace PharmaCore.Application.Services
 
             await _uow.CompleteAsync();
         }
+
+        public async Task<TopSellingDrugsResponse> GetTopSellingDrugsAsync(int count = 5, int days = 7)
+        {
+            var drugs = await _uow.Drugs.GetTopSellingDrugsAsync(count, days);
+
+            var startDate = DateTime.UtcNow.AddDays(-days);
+
+            return new TopSellingDrugsResponse
+            {
+                DaysPeriod = days,
+                StartDate = startDate,
+                Drugs = drugs
+            };
+        }
     }
 }

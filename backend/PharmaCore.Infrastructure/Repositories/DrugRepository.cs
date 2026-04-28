@@ -1,6 +1,7 @@
 ﻿
 
 using Microsoft.EntityFrameworkCore;
+using PharmaCore.Core.DTOs.Drug;
 using PharmaCore.Core.Entities;
 using PharmaCore.Core.Interfaces.Repositories;
 using PharmaCore.Infrastructure.Data;
@@ -92,6 +93,29 @@ namespace PharmaCore.Infrastructure.Repositories
         {
             return _context.Drugs.AsQueryable()
                 .AsNoTracking();
+        }
+
+        public async Task<IEnumerable<TopSellingDrugDto>> GetTopSellingDrugsAsync(int count = 5, int days = 7)
+        {
+            var startDate = DateTime.UtcNow.Date.AddDays(-days);
+
+            return await _context.Drugs
+                .Select(d => new TopSellingDrugDto
+                {
+                    TradeName = d.TradeName,
+                    Concentration = d.Concentration ?? "N/A",
+                    TotalSoldQuantity = d.StockBatches
+                        .SelectMany(b => b.SaleItems)
+                        .Where(si => si.Sale.SaleDate >= startDate)
+                        .Sum(si => si.Quantity),
+                    CurrentStockQuantity = d.StockBatches
+                        .Sum(b => b.RemainingQty)
+                })
+                .Where(dto => dto.TotalSoldQuantity > 0)
+                .OrderByDescending(dto => dto.TotalSoldQuantity)
+                .Take(count)
+                .AsNoTracking()
+                .ToListAsync();
         }
     }
 }

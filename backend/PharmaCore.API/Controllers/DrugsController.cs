@@ -78,5 +78,13 @@ namespace PharmaCore.API.Controllers
             bool exists = await _drugService.IsTradeNameExistsAsync(tradeName);
             return Ok(exists);
         }
+
+        [HttpGet("top-selling")]
+        public async Task<ActionResult<TopSellingDrugsResponse>> GetTopSelling([FromQuery] int count = 5, int days = 7)
+        {
+            var topSellingDrugsResponse = await _drugService.GetTopSellingDrugsAsync(count: count, days: days);
+
+            return Ok(topSellingDrugsResponse);
+        }
     }
 }

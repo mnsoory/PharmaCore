@@ -16,5 +16,6 @@ namespace PharmaCore.Core.Interfaces.Services
         Task DeleteAsync(int id);
 
         Task<bool> IsTradeNameExistsAsync(string tradeName);
+        Task<TopSellingDrugsResponse> GetTopSellingDrugsAsync(int count = 5, int days = 7);
     }
 }

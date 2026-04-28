@@ -17,6 +17,10 @@ namespace PharmaCore.Application.Mappings
 
             CreateMap<UpdateDrugDto, Drug>()
                 .ForMember(dest => dest.TradeName, opt => opt.MapFrom(src => src.TradeName.Trim()));
+
+            CreateMap<Drug, TopSellingDrugDto>()
+                .ForMember(dest => dest.TotalSoldQuantity, opt => opt.MapFrom(src => src.StockBatches.Sum(s => s.SaleItems.Sum(si => si.Quantity))))
+                .ForMember(dest => dest.CurrentStockQuantity, opt => opt.MapFrom(src => src.StockBatches.Sum(s => s.Quantity)));
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿
 
+using PharmaCore.Core.DTOs.Drug;
 using PharmaCore.Core.Entities;
 
 namespace PharmaCore.Core.Interfaces.Repositories
@@ -17,5 +18,7 @@ namespace PharmaCore.Core.Interfaces.Repositories
         Task<int> CountByIdsAsync(ICollection<int> drugIds);
         Task<IEnumerable<Drug>> GetAllWithSettingsAndBatchesAsync();
         IQueryable<Drug> GetQueryable();
+
+        Task<IEnumerable<TopSellingDrugDto>> GetTopSellingDrugsAsync(int count = 5, int days = 7);
     }
 }
