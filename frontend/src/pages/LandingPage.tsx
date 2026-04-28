@@ -79,7 +79,7 @@ const LandingPage: React.FC = () => {
           </div>
 
           {FeaturesContent(
-            "hidden lg:flex absolute right-[-26vw] xl:right-[-22vw] top-1/2 -translate-y-1/2 w-64",
+            "hidden lg:flex absolute right-[-26vw] xl:right-[-20vw] top-1/2 -translate-y-1/2 w-64",
           )}
         </div>
 
