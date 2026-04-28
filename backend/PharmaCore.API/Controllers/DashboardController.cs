@@ -11,15 +11,18 @@ namespace PharmaCore.Api.Controllers
         private readonly ISaleService _saleService;
         private readonly IStockBatchService _stockBatchService;
         private readonly ISupplierService _supplierService;
+        private readonly IDrugService _drugService;
 
         public DashboardController(
             ISaleService saleService,
             IStockBatchService stockBatchService,
-            ISupplierService supplierService)
+            ISupplierService supplierService,
+            IDrugService drugService)
         {
             _saleService = saleService;
             _stockBatchService = stockBatchService;
             _supplierService = supplierService;
+            _drugService = drugService;
         }
 
         [HttpGet("summary")]
@@ -34,6 +37,8 @@ namespace PharmaCore.Api.Controllers
             var expiringSoon = await _stockBatchService.GetExpiringBatchesCategorizedAsync();
             var expiredBatches = await _stockBatchService.GetExpiredBatchesAsync();
             var suppliers = await _supplierService.GetAllAsync();
+            var topSellingDrugsResponse = await _drugService.GetTopSellingDrugsAsync();
+            var weeklySales = await _saleService.GetWeeklySalesPerformanceAsync();
 
             var summary = new DashboardSummaryDto
             {
@@ -49,8 +54,9 @@ namespace PharmaCore.Api.Controllers
                 ExpiredCount = expiredBatches.Count(),
                 ExpiredBatches = expiredBatches.ToList(),
 
-                TotalRevenue = todayRevenueData.TotalRevenue,
-                ActiveSuppliersCount = suppliers.Count(s => s.IsActive)
+                ActiveSuppliersCount = suppliers.Count(s => s.IsActive),
+                TopSellingDrugsResponse = topSellingDrugsResponse,
+                WeeklySales = weeklySales.ToList()
             };
 
             return Ok(summary);

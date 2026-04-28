@@ -1,5 +1,7 @@
 ﻿
 
+using PharmaCore.Core.DTOs.Drug;
+using PharmaCore.Core.DTOs.Sale;
 using PharmaCore.Core.DTOs.StockBatch;
 
 namespace PharmaCore.Core.DTOs.Dashboard
@@ -15,8 +17,9 @@ namespace PharmaCore.Core.DTOs.Dashboard
         public List<LowStockDrugDto> LowStockDrugs { get; set; } = new();
         public List<StockBatchResponseDto> ExpiringSoonBatches { get; set; } = new();
         public List<StockBatchResponseDto> ExpiredBatches { get; set; } = new();
+        public List<DailySalesDto> WeeklySales { get; set; } = new();
+        public TopSellingDrugsResponse TopSellingDrugsResponse { get; set; } = null!;
 
-        public decimal TotalRevenue { get; set; } 
         public int ActiveSuppliersCount { get; set; }
     }
 }
