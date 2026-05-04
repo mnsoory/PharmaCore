@@ -1,57 +1,74 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import SidebarHeader from "./SidebarHeader";
+import SidebarFooter from "./SidebarFooter";
+import NavSection from "./NavSection";
+import CollapseButton from "./CollapseButton";
 import menuItems from "./menuItems";
+import { useSidebarStore } from "../../../store/useSidebarStore";
+import { X } from "lucide-react";
+
+const SidebarContent: React.FC<{ collapsed: boolean }> = ({ collapsed }) => (
+  <>
+    <SidebarHeader />
+    <nav
+      role="navigation"
+      aria-label="Main navigation"
+      className="flex-1 space-y-3 overflow-y-auto px-3 py-4"
+    >
+      {menuItems.map((section, i) => (
+        <React.Fragment key={section.group}>
+          {!collapsed && i === menuItems.length - 1 && (
+            <div className="my-2 border-t border-sidebar-border" />
+          )}
+          <NavSection section={section} collapsed={collapsed} />
+        </React.Fragment>
+      ))}
+    </nav>
+    <SidebarFooter />
+  </>
+);
 
 const Sidebar: React.FC = () => {
-  return (
-    <aside className="w-54 h-full py-6 flex flex-col gap-8 select-none">
-      {menuItems.map((group, idx) => (
-        <div key={idx} className="flex flex-col gap-2">
-          <h3 className="px-8 text-[10px] font-bold text-slate-700 tracking-widest uppercase">
-            {group.group}
-          </h3>
+  const { collapsed, toggle, mobileOpen, closeMobile } = useSidebarStore();
 
-          <nav className="flex flex-col gap-1 px-2">
-            {group.items.map((item) => (
-              <NavLink
-                key={item.name}
-                to={item.path}
-                className={({ isActive }) => `
-                  flex items-center gap-3 px-2 py-0.5 rounded-2xl transition-all duration-300 group
-                  ${
-                    isActive
-                      ? "bg-slate-100 shadow-[inset_2px_2px_12px_#cbd5e1,inset_-4px_-4px_8px_#ffffff] text-slate-900"
-                      : "text-slate-600 hover:text-slate-900"
-                  }
-                `}
-              >
-                {({ isActive }) => (
-                  <>
-                    <div
-                      className={`
-                      p-2 rounded-xl transition-all
-                      ${
-                        isActive
-                          ? "bg-slate-100 shadow-sm text-slate-900"
-                          : "bg-transparent group-hover:bg-white/50"
-                      }
-                    `}
-                    >
-                      <item.icon size={12} strokeWidth={isActive ? 2 : 2} />
-                    </div>
-                    <span
-                      className={`text-sm font-semibold ${isActive ? "opacity-100" : "opacity-70"}`}
-                    >
-                      {item.name}
-                    </span>
-                  </>
-                )}
-              </NavLink>
-            ))}
-          </nav>
-        </div>
-      ))}
-    </aside>
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <aside
+        className={`fixed ltr:left-0 rtl:right-0 top-0 z-40 hidden h-screen flex-col bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out lg:flex ${
+          collapsed ? "w-20" : "w-65"
+        }`}
+      >
+        <SidebarContent collapsed={collapsed} />
+        <CollapseButton collapsed={collapsed} onClick={toggle} />
+      </aside>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden"
+          onClick={closeMobile}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Mobile drawer */}
+      <aside
+        className={`fixed ltr:left-0 rtl:right-0 top-0 z-50 flex h-screen w-65 flex-col bg-sidebar border-r border-sidebar-border transition-transform duration-300 ease-in-out lg:hidden ${
+          mobileOpen ? "translate-x-0" : "ltr:-translate-x-full rtl:translate-x-full"
+        }`}
+      >
+        <button
+          aria-label="Close menu"
+          onClick={closeMobile}
+          className="absolute top-4 ltr:right-4 rtl:left-4 flex h-7 w-7 items-center justify-center rounded-lg text-sidebar-foreground/40 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground z-10"
+        >
+          <X className="h-6 w-6" />
+        </button>
+
+        <SidebarContent collapsed={false} />
+      </aside>
+    </>
   );
 };
 

@@ -1,45 +1,50 @@
 import {
-  LayoutDashboard,
-  Pill,
-  ClipboardList,
-  Truck,
-  ShoppingCart,
-  RotateCcw,
-  Settings2,
-  Users,
-  Database,
-  History,
+  LayoutDashboard, Pill, Database,
+  ShoppingCart, Truck, RotateCcw, Settings2,
+  ClipboardList, Users, History,
 } from "lucide-react";
 
-const menuItems = [
+export interface NavItem {
+  name: string;
+  icon: React.ElementType;
+  path: string;
+  badge?: number;
+}
+
+export interface NavGroup {
+  group: string;
+  items: NavItem[];
+}
+
+const menuItems: NavGroup[] = [
   {
-    group: "MAIN MENU",
+    group: "Main Menu",
     items: [
-      { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-      { name: "Inventory", icon: Pill, path: "/drugs" },
-      { name: "Stock Batches", icon: Database, path: "/stock-batches" },
+      { name: "Dashboard",     icon: LayoutDashboard, path: "/dashboard" },
+      { name: "Inventory",     icon: Pill,            path: "/drugs" },
+      { name: "Stock Batches", icon: Database,        path: "/stock-batches" },
     ],
   },
   {
-    group: "OPERATIONS",
+    group: "Operations",
     items: [
-      { name: "Sales", icon: ShoppingCart, path: "/sales" },
-      { name: "Purchases", icon: Truck, path: "/purchase-orders" },
-      { name: "Returns", icon: RotateCcw, path: "/returns" },
-      { name: "Stock Adjustments", icon: Settings2, path: "/adjustments" },
+      { name: "Sales",              icon: ShoppingCart, path: "/sales" },
+      { name: "Purchases",          icon: Truck,        path: "/purchase-orders" },
+      { name: "Returns",            icon: RotateCcw,    path: "/returns" },
+      { name: "Stock Adjustments",  icon: Settings2,    path: "/adjustments" },
     ],
   },
   {
-    group: "PARTNERS",
+    group: "Partners",
     items: [
-      { name: "Suppliers", icon: ClipboardList, path: "/suppliers" },
-      { name: "Staff Management", icon: Users, path: "/users" },
+      { name: "Suppliers",        icon: ClipboardList, path: "/suppliers" },
+      { name: "Staff Management", icon: Users,         path: "/users" },
     ],
   },
   {
-    group: "SYSTEM",
+    group: "System",
     items: [
-      { name: "Audit Logs", icon: History, path: "/audit-logs" },
+      { name: "Audit Logs",      icon: History,   path: "/audit-logs" },
       { name: "Global Settings", icon: Settings2, path: "/stock-settings" },
     ],
   },
