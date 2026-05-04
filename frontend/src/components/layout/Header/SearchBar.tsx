@@ -1,24 +1,12 @@
-import React from 'react';
-import { Search, Mic } from 'lucide-react';
+import React from "react";
+import { Search, Mic } from "lucide-react";
 
-const SearchBar: React.FC = () => {
-  return (
-    <div className="relative flex-1 max-w-96 mx-8">
-      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-      
-      <input
-        type="text"
-        placeholder="Search for products or categories..."
-        className="w-full h-12 pl-12 pr-12 rounded-full bg-slate-50 border border-slate-100 shadow-inner
-                   placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-100
-                   transition-all duration-300"
-      />
-      
-      <button className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition-colors">
-        <Mic className="w-5 h-5" />
-      </button>
-    </div>
-  );
-};
+const SearchBar: React.FC = () => (
+  <button className="relative hidden h-9 w-75 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-400 transition-colors hover:border-slate-300 hover:bg-slate-100 sm:flex dark:border-slate-700 dark:bg-slate-800 dark:hover:border-slate-600">
+    <Search className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+    <span className="flex-1 text-left">Search for products...</span>
+    <Mic size={16}/>
+  </button>
+);
 
 export default SearchBar;
