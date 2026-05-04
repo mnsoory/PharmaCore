@@ -24,7 +24,7 @@ const SidebarContent: React.FC<{ collapsed: boolean }> = ({ collapsed }) => (
         </React.Fragment>
       ))}
     </nav>
-    <SidebarFooter />
+    <SidebarFooter collapsed = {collapsed} />
   </>
 );
 
