@@ -1,7 +1,10 @@
-"use client";
 import React from "react";
-import { Table } from "@heroui/react";
 import { Pill } from "lucide-react";
+import TableCard from "@/components/ui/table/TableCard";
+import TableShell from "@/components/ui/table/TableShell";
+import TableHeaderCell from "@/components/ui/table/TableHeaderCell";
+import TableRow from "@/components/ui/table/TableRow";
+import TableCell from "@/components/ui/table/TableCell";
 
 interface DrugStock {
   tradeName: string;
@@ -14,121 +17,125 @@ interface DrugStock {
 interface DrugStockTableProps {
   drugs: DrugStock[];
   title: string;
+  description?: string;
 }
 
-const DrugStockTable: React.FC<DrugStockTableProps> = ({ drugs, title }) => {
+const StockBar: React.FC<{ current: number; threshold: number }> = ({
+  current,
+  threshold,
+}) => {
+  const pct = Math.min((current / threshold) * 100, 100);
+  const color =
+    pct < 40 ? "bg-destructive" : pct < 90 ? "bg-warning" : "bg-success";
+  const textColor =
+    pct < 40
+      ? "text-destructive"
+      : pct < 90
+        ? "text-warning-foreground"
+        : "text-success-foreground";
+  const bgBadge =
+    pct < 40
+      ? "bg-destructive/10"
+      : pct < 90
+        ? "bg-warning/10"
+        : "bg-success/10";
+
   return (
-    <div className=" p-8 bg-[#F8F9FA] rounded-[3rem]">
-      <h2 className="text-2xl pl-4 mb-6 font-black text-slate-900 tracking-tight">
-        {title}
-      </h2>
-
-      <div className="bg-white rounded-4xl shadow-sm border border-slate-100 overflow-hidden">
-        <Table
-          aria-label="Medication Stock Table"
-          className="w-full"
-        >
-          <Table.ScrollContainer>
-            <Table.Content className="w-full px-2">
-              <Table.Header className="">
-                <Table.Column className="w-[28%] bg-[#F4F4F5] text-slate-500 font-bold text-[11px] text-center tracking-widest">
-                  MEDICATION
-                </Table.Column>
-                <Table.Column className="w-[6%] bg-[#F4F4F5] text-slate-500 font-bold text-[11px] text-left tracking-widest">
-                  GENERIC NAME
-                </Table.Column>
-                <Table.Column className="w-[15%] bg-[#F4F4F5] text-slate-500 font-bold text-[11px] text-left tracking-widest">
-                  CONC.
-                </Table.Column>
-                <Table.Column className="w-[15%] bg-[#F4F4F5] text-slate-500 font-bold text-[11px] text-left tracking-widest">
-                  STOCK STATUS
-                </Table.Column>
-                <Table.Column className="w-[15%] bg-[#F4F4F5] text-slate-500 font-bold text-[11px] py-5 px-6 text-right tracking-widest">
-                  THRESHOLD
-                </Table.Column>
-              </Table.Header>
-
-              <Table.Body>
-                {drugs.map((drug, index) => {
-                  const stockPercentage = Math.min(
-                    (drug.currentStock / drug.minimumStockThreshold) * 100,
-                    100,
-                  );
-
-                  
-                  let statusColor = "emerald"; 
-                  if (stockPercentage < 40) {
-                    statusColor = "rose";
-                  } else if (stockPercentage < 90) {
-                    statusColor = "amber"; 
-                  }
-
-                  const isLow = drug.currentStock < drug.minimumStockThreshold;
-
-                  return (
-                    <Table.Row
-                      key={index}
-                      className="group border-b border-slate-50 last:border-none hover:bg-cyan-100/40 transition-all"
-                    >
-                      <Table.Cell className="w-[28%] py-6 px-6">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 ${isLow ? `bg-${statusColor}-50 text-${statusColor}-500` : "bg-blue-50 text-blue-500"}`}
-                          >
-                            <Pill size={18} />
-                          </div>
-                          <span className="font-bold text-slate-800 text-sm">
-                            {drug.tradeName}
-                          </span>
-                        </div>
-                      </Table.Cell>
-
-                      <Table.Cell className="w-[27%] text-slate-600 italic text-sm font-medium">
-                        {drug.genericName}
-                      </Table.Cell>
-
-                      <Table.Cell className="w-[15%]">
-                        <span className="px-3 py-1 bg-slate-100 rounded-full text-[11px] font-bold text-slate-600 border border-slate-200/20">
-                          {drug.concentration}
-                        </span>
-                      </Table.Cell>
-
-                      <Table.Cell className="w-[15%]">
-                        <div className="flex flex-col gap-2">
-                          <span
-                            className={`font-black text-sm text-${statusColor}-500`}
-                          >
-                            {drug.currentStock}
-                          </span>
-                          <div className="w-full max-w-20 h-1.5 bg-slate-300/80 rounded-full overflow-hidden">
-                            <div
-                              className={`h-full rounded-full bg-${statusColor}-500`}
-                              style={{ width: `${stockPercentage}%` }}
-                            />
-                          </div>
-                        </div>
-                      </Table.Cell>
-
-                      <Table.Cell className="w-[15%] text-center ">
-                        <div className="flex flex-col">
-                          <span className="text-[9px] font-bold text-slate-500 uppercase italic tracking-tighter">
-                            Min Limit
-                          </span>
-                          <span className="font-bold text-slate-600 text-sm">
-                            {drug.minimumStockThreshold}
-                          </span>
-                        </div>
-                      </Table.Cell>
-                    </Table.Row>
-                  );
-                })}
-              </Table.Body>
-            </Table.Content>
-          </Table.ScrollContainer>
-        </Table>
+    <div className="flex flex-col gap-1.5">
+      <span
+        className={`text-sm font-bold w-fit rounded-md px-1.5 py-0.5 ${textColor} ${bgBadge}`}
+      >
+        {current}
+      </span>
+      <div className="h-1.5 w-24 rounded-full bg-muted overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all duration-500 ${color}`}
+          style={{ width: `${pct}%` }}
+        />
       </div>
     </div>
   );
 };
+
+const DrugStockTable: React.FC<DrugStockTableProps> = ({
+  drugs,
+  title,
+  description,
+}) => (
+  <TableCard title={title} description={description}>
+    <TableShell>
+      <thead>
+        <tr className="border-b border-border">
+          <TableHeaderCell>Medication</TableHeaderCell>
+          <TableHeaderCell>Generic Name</TableHeaderCell>
+          <TableHeaderCell hideBelow="sm">Concentration</TableHeaderCell>
+          <TableHeaderCell hideBelow="sm">Stock Status</TableHeaderCell>
+          <TableHeaderCell align="end">Threshold</TableHeaderCell>
+        </tr>
+      </thead>
+      <tbody>
+        {drugs.map((drug, i) => {
+          const isLow = drug.currentStock < drug.minimumStockThreshold;
+
+          return (
+            <TableRow key={i}>
+              {/* Medication */}
+              <TableCell>
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`flex h-9 w-9 items-center justify-center rounded-xl transition-transform duration-150 group-hover:scale-110 ${
+                      isLow
+                        ? "bg-destructive/10 text-destructive"
+                        : "bg-sidebar-primary/10 text-sidebar-primary"
+                    }`}
+                  >
+                    <Pill size={16} />
+                  </div>
+                  <span className="text-sm font-semibold">
+                    {drug.tradeName}
+                  </span>
+                </div>
+              </TableCell>
+
+              {/* Generic Name */}
+              <TableCell>
+                <span className="text-sm italic text-muted-foreground">
+                  {drug.genericName}
+                </span>
+              </TableCell>
+
+              {/* Concentration */}
+              <TableCell hideBelow="sm">
+                <span className="rounded-full border border-sidebar-primary/20 bg-sidebar-primary/5 px-2.5 py-0.5 text-[11px] font-semibold text-sidebar-primary">
+                  {drug.concentration}
+                </span>
+              </TableCell>
+
+              {/* Stock Status */}
+              <TableCell hideBelow="sm">
+                <StockBar
+                  current={drug.currentStock}
+                  threshold={drug.minimumStockThreshold}
+                />
+              </TableCell>
+
+              {/* Threshold */}
+              <TableCell align="end" className="ps-8">
+                <div className="flex flex-col items-center">
+                  <span className="text-[9px] font-bold uppercase tracking-tight text-muted-foreground">
+                    Min Limit
+                  </span>
+                  <span className="text-sm font-semibold text-muted-foreground">
+                    {drug.minimumStockThreshold}
+                  </span>
+                </div>
+              </TableCell>
+            </TableRow>
+          );
+        })}
+      </tbody>
+    </TableShell>
+  </TableCard>
+);
 
 export default DrugStockTable;
