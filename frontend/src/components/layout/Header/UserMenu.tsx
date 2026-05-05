@@ -24,7 +24,7 @@ const UserMenu: React.FC = () => {
         aria-label="User menu"
         aria-expanded={open}
         onClick={() => setOpen((p) => !p)}
-        className="flex h-10 items-center gap-1 rounded-full bg-slate-100 p-1.5 pr-2.5 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
+        className="flex h-10 items-center gap-3 rounded-full bg-slate-100 p-1.5 pr-2.5 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
       >
         {user?.avatarUrl ? (
           <img
