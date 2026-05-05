@@ -73,7 +73,7 @@ const PharmaSalesChart: React.FC<PharmaSalesChartProps> = ({
   ];
 
   return (
-    <Card className="rounded-[2.5rem] border-none bg-[#F9FBFE] shadow-[8px_8px_30px_#e0e5eb,-8px_-8px_30px_#ffffff] p-8 font-sans overflow-visible">
+    <Card className="rounded-[2.5rem] border-none bg-white shadow-[0px_0px_15px_rgba(0,0,0,0.12)] p-8 font-sans overflow-visible">
       <h3 className="text-xl font-bold text-slate-900 mb-14 tracking-tight">{title}</h3>
 
       <div className="flex gap-4">
