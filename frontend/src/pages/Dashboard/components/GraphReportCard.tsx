@@ -53,7 +53,7 @@ const GraphReportCard: React.FC<GraphReportCardProps> = ({
   };
 
   return (
-    <Card className="rounded-[2.5rem] border-none bg-slate-50/50 shadow-[10px_10px_30px_rgba(224,229,235,0.5),-10px_-10px_30px_#ffffff] p-8">
+    <Card className="rounded-[2.5rem] border-none bg-white shadow-[0px_0px_15px_rgba(0,0,0,0.12)] p-8">
       <h3 className="text-lg font-black text-slate-900 mb-2">{title}</h3>
 
       <div className="relative flex items-center justify-center p-14">
