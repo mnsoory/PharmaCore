@@ -1,40 +1,127 @@
 @import "tailwindcss";
 
 @theme {
-  --color-pharm-dark: #0a2121;
-  --color-app-bg: #91969d;
-  --color-page-bg: #edf3f3;
-  --color-card-green: #d7f1b9;
-  --color-card-cyan: #cff1ed;
-  --color-card-red: #fcdede;
-
+  /* ═══ Typography ═══ */
   --font-sans: "Inter", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-logo: "Lobster", sans-serif;
-  --font-dancing: "Dancing Script", cursive;
-  --font-lobster: "Lobster", display;
-  --font-lobstertwo: "Lobster Two", ital;
 
-  --shadow-small: 0 2px 6px rgba(0, 0, 0, 0.05);
+  /* ═══ Radius ═══ */
+  --radius-sm: calc(0.75rem - 4px);
+  --radius-md: calc(0.75rem - 2px);
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  /* ═══ Shadows ═══ */
+  --shadow-small:        0 2px 6px rgba(0, 0, 0, 0.05);
   --shadow-inner-custom: inset 0 2px 4px rgba(0, 0, 0, 0.06);
-  --shadow-inner-white: inset 0 2px 4px rgba(255, 255, 255, 0.8);
-  --shadow-emerald-lg: 0 10px 25px rgba(16, 185, 129, 0.3);
+  --shadow-inner-white:  inset 0 2px 4px rgba(255, 255, 255, 0.8);
+  --shadow-emerald-lg:   0 10px 25px rgba(16, 185, 129, 0.3);
 
-  --animate-fade-in: fadeIn 0.3s ease-out forwards;
+  /* ═══ Light mode — Base ═══ */
+  --color-background:        oklch(99.3% 0.003 30);
+  --color-foreground:        oklch(18% 0.02 30);
+
+  --color-card:              oklch(99.3% 0.003 30);
+  --color-card-foreground:   oklch(18% 0.02 30);
+
+  --color-border:            oklch(92.5% 0.008 30);
+  --color-input:             oklch(92.5% 0.008 30);
+  --color-ring:              oklch(62% 0.18 30);
+
+  --color-muted:             oklch(96.5% 0.008 30);
+  --color-muted-foreground:  oklch(50% 0.02 30);
+
+  --color-accent:            oklch(95.5% 0.02 30);
+  --color-accent-foreground: oklch(25% 0.02 30);
+
+  --color-primary:           oklch(62% 0.18 30);
+  --color-primary-foreground: oklch(99% 0 0);
+
+  --color-destructive:       hsl(0 84% 60%);
+  --color-destructive-foreground: hsl(0 0% 98%);
+
+  --color-success:           hsl(142 71% 45%);
+  --color-success-foreground: hsl(0 0% 100%);
+
+  --color-warning:           hsl(38 92% 50%);
+  --color-warning-foreground: hsl(0 0% 100%);
+
+  /* ═══ Light mode — Sidebar ═══ */
+  --color-sidebar:                    oklch(98.5% 0.004 30);
+  --color-sidebar-foreground:         oklch(18% 0.02 30);
+  --color-sidebar-border:             oklch(92.5% 0.008 30);
+  --color-sidebar-primary:            oklch(62% 0.18 30);
+  --color-sidebar-primary-foreground: oklch(99% 0 0);
+  --color-sidebar-accent:             oklch(95.5% 0.02 30);
+  --color-sidebar-accent-foreground:  oklch(25% 0.02 30);
+  --color-sidebar-ring:               oklch(62% 0.18 30);
+}
+
+/* ═══ Dark mode ═══ */
+.dark {
+  --color-background:        hsl(222 47% 11%);
+  --color-foreground:        hsl(210 40% 98%);
+
+  --color-card:              hsl(222 47% 13%);
+  --color-card-foreground:   hsl(210 40% 98%);
+
+  --color-border:            hsl(217 33% 20%);
+  --color-input:             hsl(217 33% 20%);
+  --color-ring:              hsl(217 91% 60%);
+
+  --color-muted:             hsl(217 33% 17%);
+  --color-muted-foreground:  hsl(215 20% 65%);
+
+  --color-accent:            hsl(217 33% 17%);
+  --color-accent-foreground: hsl(210 40% 98%);
+
+  --color-primary:           hsl(217 91% 60%);
+  --color-primary-foreground: hsl(0 0% 100%);
+
+  --color-destructive:       hsl(0 63% 55%);
+  --color-destructive-foreground: hsl(0 0% 98%);
+
+  --color-success:           hsl(142 71% 40%);
+  --color-success-foreground: hsl(0 0% 100%);
+
+  --color-warning:           hsl(38 92% 50%);
+  --color-warning-foreground: hsl(0 0% 100%);
+
+  --color-sidebar:                    hsl(222 47% 9%);
+  --color-sidebar-foreground:         hsl(210 40% 98%);
+  --color-sidebar-border:             hsl(217 33% 18%);
+  --color-sidebar-primary:            hsl(217 91% 60%);
+  --color-sidebar-primary-foreground: hsl(0 0% 100%);
+  --color-sidebar-accent:             hsl(217 33% 17%);
+  --color-sidebar-accent-foreground:  hsl(210 40% 98%);
+  --color-sidebar-ring:               hsl(217 91% 60%);
+}
+
+@variant dark (&:where(.dark, .dark *));
+
+/* ═══ Base styles ═══ */
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+  }
+
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
 
   @keyframes fadeIn {
-    0% {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0);     }
   }
 }
 
-html, body, #root {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
+/* ═══ Scrollbar ═══ */
+::-webkit-scrollbar       { width: 8px; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
