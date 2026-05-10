@@ -1,77 +1,142 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ChevronDown, UserCircle } from "lucide-react";
+import { ChevronDown, UserCircle, User, Settings, LogOut } from "lucide-react";
+import { NavLink } from "react-router-dom";
+import { createPortal } from "react-dom";
 import { useAuthStore } from "../../../store/useAuthStore";
 import { authService } from "../../../services/authService";
 
 const UserMenu: React.FC = () => {
   const user = useAuthStore((s) => s.user);
   const clearAuth = useAuthStore((s) => s.clearAuth);
+
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, right: 0 });
+
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node))
+      if (
+        buttonRef.current &&
+        !buttonRef.current.contains(e.target as Node) &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
         setOpen(false);
+      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  const handleOpen = () => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setDropdownPos({
+        top: rect.bottom + 6,
+        right: window.innerWidth - rect.right,
+      });
+    }
+    setOpen((p) => !p);
+  };
+
   return (
-    <div className="relative" ref={ref}>
+    <>
+      {/* Trigger button */}
       <button
+        ref={buttonRef}
         aria-label="User menu"
         aria-expanded={open}
-        onClick={() => setOpen((p) => !p)}
-        className="flex h-10 items-center gap-3 rounded-full bg-slate-100 p-1.5 pr-2.5 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
+        onClick={handleOpen}
+        className="flex h-9 items-center gap-2 rounded-lg border border-border bg-muted/40 pl-1.5 pr-2.5 transition-colors hover:bg-muted hover:border-border/80"
       >
+        {/* Avatar */}
         {user?.avatarUrl ? (
           <img
             src={user.avatarUrl}
             alt=""
-            className="h-6 w-6 rounded-full border border-white object-cover dark:border-slate-700"
+            className="h-6 w-6 rounded-full border border-border object-cover"
           />
         ) : (
-          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
-            <UserCircle className="h-6 w-6 text-blue-600 dark:text-blue-300" />
+          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-sidebar-primary/15 text-sidebar-primary">
+            <UserCircle className="h-5 w-5" />
           </div>
         )}
-        <div className="hidden flex-col text-left sm:flex">
-          <span className="text-14 font-medium leading-tight text-slate-800 dark:text-slate-100">
+
+        {/* Name + email */}
+        <div className="hidden flex-col text-left md:flex">
+          <span className="text-sm font-medium leading-tight text-foreground">
             {user?.fullName ?? "User"}
           </span>
-          <span className="max-w-25 truncate text-[12px] leading-tight text-slate-400">
+          <span className="max-w-30 truncate text-[11px] leading-tight text-muted-foreground">
             {user?.email ?? ""}
           </span>
         </div>
+
         <ChevronDown
-          className={`h-3 w-3 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`hidden h-3 w-3 text-muted-foreground transition-transform md:block ${
+            open ? "rotate-180" : ""
+          }`}
         />
       </button>
 
-      {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-44 rounded-2xl border border-slate-100 bg-white p-1.5 shadow-lg dark:border-slate-700 dark:bg-slate-800">
-          <button className="w-full rounded-lg px-3 py-2 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700">
-            Profile
-          </button>
-          <button className="w-full rounded-lg px-3 py-2 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700">
-            Settings
-          </button>
-          <div className="my-1 h-px bg-slate-100 dark:bg-slate-700" />
-          <button
-            onClick={() => {
-              authService.logout();
-              clearAuth();
-              setOpen(false);
-            }}
-            className="w-full rounded-lg px-3 py-2 text-left text-sm text-red-600 transition-colors hover:bg-red-50 dark:hover:bg-red-950/30"
+      {/* Dropdown */}
+      {open &&
+        createPortal(
+          <div
+            ref={dropdownRef}
+            style={{ top: dropdownPos.top, right: dropdownPos.right }}
+            className="fixed z-200 w-48 rounded-lg border border-border bg-background shadow-md p-1"
           >
-            Logout
-          </button>
-        </div>
-      )}
-    </div>
+            {/* User info */}
+            <div className="px-3 py-2 border-b border-border mb-1">
+              <p className="text-sm font-semibold text-foreground truncate">
+                {user?.fullName ?? "User"}
+              </p>
+              <p className="text-xs text-muted-foreground truncate mt-0.5">
+                {user?.email ?? ""}
+              </p>
+            </div>
+
+            {/* Profile */}
+            <NavLink
+              to="/profile"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2.5 w-full rounded-md px-3 py-2 text-sm text-foreground transition-colors hover:bg-muted"
+            >
+              <User className="h-4 w-4 text-muted-foreground" />
+              Profile
+            </NavLink>
+
+            {/* Settings */}
+            <NavLink
+              to="/settings"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2.5 w-full rounded-md px-3 py-2 text-sm text-foreground transition-colors hover:bg-muted"
+            >
+              <Settings className="h-4 w-4 text-muted-foreground" />
+              Settings
+            </NavLink>
+
+            <div className="my-1 h-px bg-border" />
+
+            {/* Logout */}
+            <button
+              onClick={() => {
+                authService.logout();
+                clearAuth();
+                setOpen(false);
+              }}
+              className="flex items-center gap-2.5 w-full rounded-md px-3 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10"
+            >
+              <LogOut className="h-4 w-4" />
+              Logout
+            </button>
+          </div>,
+          document.body,
+        )}
+    </>
   );
 };
 

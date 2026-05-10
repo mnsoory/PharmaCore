@@ -5,7 +5,7 @@ import LanguageSelector from "./LanguageSelector";
 import UserMenu from "./UserMenu";
 
 const RightSection: React.FC = () => (
-  <div className="flex items-center gap-6">
+  <div className="flex items-center gap-3 md:gap-6">
     <ThemeToggle />
     <NotificationsButton />
     <LanguageSelector />
