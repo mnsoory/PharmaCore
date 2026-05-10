@@ -1,11 +1,13 @@
 import React from "react";
-import { DollarSign, Clock, AlertTriangle, AlertOctagon } from "lucide-react";
 import StatCard from "./components/StatCard";
 import GraphReportCard from "./components/GraphReportCard";
 import DrugStockTable from "./components/DrugStockTable";
 import PharmaSalesChart from "./components/PharmaSalesChart";
 import { useQuery } from "@tanstack/react-query";
 import { getDashboardSummary } from "@/services/dashboardService";
+import LoadingScreen from "@/components/ui/LoadingScreen";
+import ErrorScreen from "@/components/ui/ErrorScreen";
+import { dashboardKeys } from "@/api/keys";
 
 const CHART_COLORS = [
   { color: "#2563EB", legendColor: "bg-blue-600" },
@@ -19,9 +21,11 @@ const Dashboard: React.FC = () => {
   const {
     data: summary,
     isLoading,
+    isFetching,
     isError,
+    refetch,
   } = useQuery({
-    queryKey: ["dashboardStats"],
+    queryKey: dashboardKeys.summary(),
     queryFn: getDashboardSummary,
   });
 
@@ -48,9 +52,11 @@ const Dashboard: React.FC = () => {
       0,
     ) ?? 0;
 
-  if (isLoading) return <div>Loading data...</div>;
-  if (isError || !summary)
-    return <div>An error occurred while fetching data</div>;
+  if (isLoading) 
+    return <LoadingScreen/>
+  
+  if (isError || !summary) 
+    return <ErrorScreen onRetry={() => refetch()} resetLoading={isFetching} />;
 
   return (
     <div className="flex flex-col gap-10">
@@ -59,28 +65,24 @@ const Dashboard: React.FC = () => {
           title="Today's Sales"
           value={`$ ${summary.todaySalesAmount.toFixed(2)}`}
           change={`${summary.todaySalesCount} orders`}
-          icon={<DollarSign size={20} />}
           variant="green"
         />
         <StatCard
           title="Low Stock"
           value={summary.lowStockCount}
           change="Needs restocking"
-          icon={<AlertTriangle size={20} />}
           variant="blue"
         />
         <StatCard
           title="Expiring Soon"
           value={summary.expiringSoonCount}
           change="Expiring in 3 months"
-          icon={<Clock size={20} />}
           variant="pink"
         />
         <StatCard
           title="Expired Batches"
           value={summary.expiredCount}
           change="ToRemove from stock"
-          icon={<AlertOctagon size={20} />}
           variant="purple"
         />
       </section>

@@ -73,8 +73,8 @@ const PharmaSalesChart: React.FC<PharmaSalesChartProps> = ({
   ];
 
   return (
-    <Card className="rounded-[2.5rem] border-none bg-white shadow-[0px_0px_15px_rgba(0,0,0,0.12)] p-8 font-sans overflow-visible">
-      <h3 className="text-xl font-bold text-slate-900 mb-14 tracking-tight">{title}</h3>
+    <Card className="rounded-[2.5rem] bg-card shadow-[0px_0px_15px_rgba(0,0,0,0.12)] p-8 font-sans overflow-hidden">
+      <h3 className="text-xl font-bold text-foreground mb-14 tracking-tight">{title}</h3>
 
       <div className="flex gap-4">
         <div className="flex flex-col justify-between text-[10px] font-bold text-slate-600 h-40 pr-2 w-8">
@@ -89,7 +89,7 @@ const PharmaSalesChart: React.FC<PharmaSalesChartProps> = ({
               {yAxisLabels.map((_, i) => (
                 <div 
                   key={i} 
-                  className={`w-full border-t border-slate-200/60 ${i === 4 ? "border-solid border-slate-200/60" : "border-dashed"}`} 
+                  className={`w-full border-t border-border ${i === 4 ? "border-solid border-slate-200/60" : "border-dashed"}`} 
                 />
               ))}
             </div>

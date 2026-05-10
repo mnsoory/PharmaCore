@@ -53,7 +53,8 @@ const GraphReportCard: React.FC<GraphReportCardProps> = ({
   };
 
   return (
-    <Card className="rounded-[2.5rem] border-none bg-white shadow-[0px_0px_15px_rgba(0,0,0,0.12)] p-8">
+    <div className="rounded-[2.5rem]">
+    <Card className="rounded-[2.5rem] border-none bg-card shadow-[0px_0px_15px_rgba(0,0,0,0.12)] p-8">
       <h3 className="text-lg font-black text-slate-900 mb-2">{title}</h3>
 
       <div className="relative flex items-center justify-center p-14">
@@ -61,12 +62,12 @@ const GraphReportCard: React.FC<GraphReportCardProps> = ({
           className="relative w-60 h-60 rounded-full flex items-center justify-center shadow-sm"
           style={{ background: `conic-gradient(${gradientString})` }}
         >
-          <div className="w-[82%] h-[82%] bg-white rounded-full flex items-center justify-center shadow-[inset_0_4px_12px_rgba(0,0,0,0.03)]">
+          <div className="w-[82%] h-[82%] bg-card rounded-full flex items-center justify-center shadow-[inset_0_4px_12px_rgba(0,0,0,0.03)]">
             <div className="text-center">
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.25em] mb-1">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.25em] mb-1">
                 Total Units
               </p>
-              <p className="text-5xl font-black text-slate-900 tracking-tighter">
+              <p className="text-5xl font-black text-foreground tracking-tighter">
                 {formatNumber(totalValue)}
               </p>
             </div>
@@ -98,6 +99,7 @@ const GraphReportCard: React.FC<GraphReportCardProps> = ({
         ))}
       </div>
     </Card>
+    </div>
   );
 };
 

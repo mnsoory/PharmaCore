@@ -1,17 +1,20 @@
 import * as React from "react"
-
 import { cn } from "@/lib/utils"
 
-function Card({ className, ...props }: React.ComponentProps<"div">) {
+function Card({ className, children, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card"
       className={cn(
-        "flex flex-col gap-4 rounded-[2.5rem] border bg-card py-3 pl-2 text-card-foreground shadow-sm",
+        "relative flex flex-col gap-4 rounded-[2.5rem] border bg-card py-3 pl-2 text-card-foreground shadow-sm overflow-hidden",
         className
       )}
       {...props}
-    />
+    >
+      <div className="absolute inset-x-0 top-0 h-1 w-full bg-linear-to-r from-sidebar-primary/60 via-sidebar-primary to-sidebar-primary/60" />
+      
+      {children}
+    </div>
   )
 }
 
@@ -20,7 +23,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-header"
       className={cn(
-        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6",
+        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 pt-4", // أضفت pt-4 لترك مسافة بسيطة تحت الخط
         className
       )}
       {...props}
