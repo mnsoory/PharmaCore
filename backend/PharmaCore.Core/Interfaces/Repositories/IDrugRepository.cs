@@ -20,5 +20,6 @@ namespace PharmaCore.Core.Interfaces.Repositories
         IQueryable<Drug> GetQueryable();
 
         Task<IEnumerable<TopSellingDrugDto>> GetTopSellingDrugsAsync(int count = 5, int days = 7);
+        Task<Drug?> GetWithDeletedAsync(string tradeName, string concentration, string form, string manufacturer);
     }
 }

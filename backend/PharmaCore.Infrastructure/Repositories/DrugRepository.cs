@@ -45,12 +45,15 @@ namespace PharmaCore.Infrastructure.Repositories
         {
             return await _context.Drugs
                 .AsNoTracking()
+                .Include(d => d.StockSetting)
                 .ToListAsync();
         }
 
         public async Task<Drug?> GetByIdAsync(int id)
         {
-            return await _context.Drugs.FindAsync(id);
+            return await _context.Drugs
+                .Include(d => d.StockSetting)
+                .FirstOrDefaultAsync(d => d.DrugId == id);
         }
 
         public async Task<IEnumerable<Drug>> SearchAsync(string searchTerm)
@@ -62,6 +65,7 @@ namespace PharmaCore.Infrastructure.Repositories
             return await _context.Drugs
                 .AsNoTracking()
                 .Where(d => d.TradeName.Contains(searchTerm) || d.GenericName.Contains(searchTerm))
+                .Include(d => d.StockSetting)
                 .ToListAsync();
         }
 
@@ -116,6 +120,18 @@ namespace PharmaCore.Infrastructure.Repositories
                 .Take(count)
                 .AsNoTracking()
                 .ToListAsync();
+        }
+
+        public async Task<Drug?> GetWithDeletedAsync(string tradeName, string concentration, string form, string manufacturer)
+        {
+            return await _context.Drugs
+                .IgnoreQueryFilters() 
+                .Include(d => d.StockSetting)
+                .FirstOrDefaultAsync(d =>
+                    d.TradeName == tradeName &&
+                    d.Concentration == concentration &&
+                    d.Form == form &&
+                    d.Manufacturer == manufacturer);
         }
     }
 }

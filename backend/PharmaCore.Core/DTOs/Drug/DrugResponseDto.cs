@@ -12,5 +12,6 @@ namespace PharmaCore.Core.DTOs.Drug
         public string Concentration { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
         public bool RequiresPrescription { get; set; }
+        public int? MinimumStock { get; set; }
     }
 }

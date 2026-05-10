@@ -10,7 +10,9 @@ namespace PharmaCore.Application.Mappings
     {
         public DrugProfile()
         {
-            CreateMap<Drug, DrugResponseDto>();
+            CreateMap<Drug, DrugResponseDto>()
+                .ForMember(dest => dest.MinimumStock, opt => opt.MapFrom(src =>
+        src.StockSetting != null ? src.StockSetting.MinimumStock : 0));
 
             CreateMap<CreateDrugDto, Drug>()
                 .ForMember(dest => dest.TradeName, opt => opt.MapFrom(src => src.TradeName.Trim()));

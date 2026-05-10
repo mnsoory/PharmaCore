@@ -22,8 +22,30 @@ namespace PharmaCore.Application.Services
 
         public async Task<DrugResponseDto> CreateAsync(CreateDrugDto createDto)
         {
-            if (await _uow.Drugs.ExistsCompositeAsync(createDto.TradeName, createDto.Concentration, createDto.Form, createDto.Manufacturer))
-                throw new BusinessException("A drug with the same trade name, concentration, form, and manufacturer already exists.");
+            var existingDrug = await _uow.Drugs.GetWithDeletedAsync(
+                createDto.TradeName,
+                createDto.Concentration!,
+                createDto.Form!,
+                createDto.Manufacturer);
+
+            if (existingDrug != null)
+            {
+                if (!existingDrug.IsDeleted)
+                {
+                    throw new BusinessException("A drug with the same trade name, concentration, form, and manufacturer already exists.");
+                }
+
+                _mapper.Map(createDto, existingDrug);
+                existingDrug.IsDeleted = false;
+
+                if (existingDrug.StockSetting != null)
+                {
+                    existingDrug.StockSetting.MinimumStock = createDto.MinimumStock ?? 10;
+                }
+
+                await _uow.CompleteAsync();
+                return _mapper.Map<DrugResponseDto>(existingDrug);
+            }
 
             Drug drugEntity = _mapper.Map<Drug>(createDto);
             await _uow.Drugs.AddAsync(drugEntity);
@@ -34,7 +56,6 @@ namespace PharmaCore.Application.Services
             };
 
             await _uow.CompleteAsync();
-
             return _mapper.Map<DrugResponseDto>(drugEntity);
         }
 
