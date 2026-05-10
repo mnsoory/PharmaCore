@@ -6,6 +6,7 @@ namespace PharmaCore.Core.Interfaces.Services
     public interface IStockBatchService
     {
         Task<StockBatchResponseDto> GetByIdAsync(int id);
+        Task<IEnumerable<StockBatchResponseDto>> GetAllAsync();
         Task<IEnumerable<StockBatchResponseDto>> GetByDrugIdAsync(int drugId);
         Task<IEnumerable<StockBatchResponseDto>> GetAvailableBatchesForSaleAsync(int drugId);
         Task<IEnumerable<StockBatchResponseDto>> GetExpiredBatchesAsync();

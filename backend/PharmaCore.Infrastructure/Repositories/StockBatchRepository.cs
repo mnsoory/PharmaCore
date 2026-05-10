@@ -33,6 +33,13 @@ namespace PharmaCore.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<StockBatch>> GetAllAsync()
+        {
+            return await _context.StockBatches
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<StockBatch>> GetActiveBatchesByDrugIdAsync(int drugId)
         {
             return await _context.StockBatches
@@ -44,6 +51,7 @@ namespace PharmaCore.Infrastructure.Repositories
         public async Task<IEnumerable<StockBatch>> GetExpiredBatchesAsync()
         {
             return await _context.StockBatches
+                .AsNoTracking()
                 .Where(b => b.ExpiryDate <= DateTime.UtcNow && b.RemainingQty > 0)
                 .ToListAsync();
         }

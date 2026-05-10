@@ -28,6 +28,12 @@ namespace PharmaCore.Application.Services
             return _mapper.Map<StockBatchResponseDto>(batch);
         }
 
+        public async Task<IEnumerable<StockBatchResponseDto>> GetAllAsync()
+        {
+            var batches = await _uow.StockBatches.GetAllAsync();
+            return _mapper.Map<IEnumerable<StockBatchResponseDto>>(batches);
+        }
+
         public async Task<IEnumerable<StockBatchResponseDto>> GetByDrugIdAsync(int drugId)
         {
             var batches = await _uow.StockBatches.GetByDrugIdAsync(drugId);

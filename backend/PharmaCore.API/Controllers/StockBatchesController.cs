@@ -15,6 +15,14 @@ namespace PharmaCore.Api.Controllers
             _stockBatchService = stockBatchService;
         }
 
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<StockBatchResponseDto>>> GetAll()
+        {
+            var result = await _stockBatchService.GetAllAsync();
+            return Ok(result);
+        }
+
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
