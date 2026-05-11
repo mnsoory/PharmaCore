@@ -56,13 +56,20 @@ const InventoryPage = () => {
   const [detailDrug, setDetailDrug] = useState<Drug | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSettingsOnlyUpdate, setIsSettingsOnlyUpdate] = useState(false);
 
   const handleEditDrug = async (id: number, data: EditDrugFormData) => {
     setIsEditing(true);
     try {
-      await inventoryService.updateDrug(id, data);
+      if (isSettingsOnlyUpdate)
+        await inventoryService.updateStockSettings({
+          drugId: id,
+          minimumStock: data.minimumStock,
+        });
+      else await inventoryService.updateDrug(id, data);
       toast.success("Drug updated successfully");
       setEditDrug(null);
+      setIsSettingsOnlyUpdate(false);
       queryClient.invalidateQueries({ queryKey: drugKeys.lists() });
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -222,6 +229,8 @@ const InventoryPage = () => {
           onClose={() => setEditDrug(null)}
           onSubmit={handleEditDrug}
           isSubmitting={isEditing}
+          isSettingsOnly={isSettingsOnlyUpdate}
+          onToggleSettingsOnly={setIsSettingsOnlyUpdate}
         />
       )}
 
