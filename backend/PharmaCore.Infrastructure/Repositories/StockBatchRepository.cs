@@ -18,7 +18,8 @@ namespace PharmaCore.Infrastructure.Repositories
         public async Task<StockBatch?> GetByIdAsync(int id)
         {
             return await _context.StockBatches
-                .Include(b => b.Drug)
+                .Include(s => s.Drug)
+                    .ThenInclude(d => d.StockSetting)
                 .Include(b => b.Supplier)
                 .FirstOrDefaultAsync(b => b.StockBatchId == id);
         }
@@ -28,7 +29,8 @@ namespace PharmaCore.Infrastructure.Repositories
             return await _context.StockBatches
                 .Where(b => b.DrugId == drugId)
                 .OrderBy(b => b.ExpiryDate)
-                .Include(b => b.Drug)
+                .Include(s => s.Drug)
+                    .ThenInclude(d => d.StockSetting)
                 .Include(b => b.Supplier)
                 .ToListAsync();
         }
@@ -37,6 +39,9 @@ namespace PharmaCore.Infrastructure.Repositories
         {
             return await _context.StockBatches
                 .AsNoTracking()
+                .Include(s => s.Supplier)
+                .Include(s => s.Drug)
+                    .ThenInclude(d => d.StockSetting)
                 .ToListAsync();
         }
 
@@ -44,6 +49,9 @@ namespace PharmaCore.Infrastructure.Repositories
         {
             return await _context.StockBatches
                 .Where(b => b.DrugId == drugId && b.RemainingQty > 0 && b.ExpiryDate > DateTime.UtcNow)
+                .Include(s => s.Drug)
+                    .ThenInclude(d => d.StockSetting)
+                .Include(s => s.Supplier)
                 .OrderBy(b => b.ExpiryDate)
                 .ToListAsync();
         }
@@ -53,6 +61,9 @@ namespace PharmaCore.Infrastructure.Repositories
             return await _context.StockBatches
                 .AsNoTracking()
                 .Where(b => b.ExpiryDate <= DateTime.UtcNow && b.RemainingQty > 0)
+                .Include(s => s.Drug)
+                    .ThenInclude(d => d.StockSetting)
+                .Include(s => s.Supplier)
                 .ToListAsync();
         }
 
@@ -90,7 +101,8 @@ namespace PharmaCore.Infrastructure.Repositories
             var thresholdDate = DateTime.UtcNow.AddDays(maxDays);
             return await _context.StockBatches
                 .AsNoTracking()
-                .Include(b => b.Drug)
+                .Include(s => s.Drug)
+                    .ThenInclude(d => d.StockSetting)
                 .Include(b => b.Supplier)
                 .Where(b => b.ExpiryDate <= thresholdDate
                          && b.ExpiryDate > DateTime.UtcNow

@@ -14,9 +14,11 @@
         public int SupplierId { get; set; }
         public int PurchaseOrderItemId { get; set; }
 
-        public string DrugName { get; set; } = string.Empty;
+        public string TradeName { get; set; } = string.Empty;
+        public string GenericName { get; set; } = string.Empty;
         public string SupplierName { get; set; } = string.Empty;
 
+        public int MinimumStockThreshold { get; set; }
         public bool IsExpired => ExpiryDate <= DateTime.UtcNow;
     }
 }
