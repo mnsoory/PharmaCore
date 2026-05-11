@@ -17,6 +17,7 @@ namespace PharmaCore.Application.Mappings
 
             CreateMap<PurchaseOrderItem, PurchaseOrderItemResponseDto>()
                 .ForMember(dest => dest.DrugName, opt => opt.MapFrom(src => src.Drug.TradeName))
+                .ForMember(dest => dest.ReceivedQty, opt => opt.MapFrom(src => src.ReceivedQuantity))
                 .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.UnitPrice * src.Quantity));
 
             CreateMap<PurchaseOrder, PurchaseOrderResponseDto>()
