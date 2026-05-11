@@ -20,6 +20,7 @@ export interface EditDrugFormData {
   form: string;
   concentration: string;
   category: string;
+  minimumStock: number;
   requiresPrescription: boolean;
 }
 
@@ -68,5 +69,10 @@ export interface DrugFormData {
   concentration: string;
   category: string;
   requiresPrescription: boolean;
+  minimumStock: number;
+}
+
+export interface StockSettingsPayload {
+  drugId: number;
   minimumStock: number;
 }
