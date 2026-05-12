@@ -1,5 +1,5 @@
 export interface StockBatch {
-  id: number;
+  stockBatchId: number;
   batchNumber: string;
   expiryDate: string;
   productionDate: string;
@@ -11,6 +11,7 @@ export interface StockBatch {
   purchaseOrderItemId: number;
   tradeName: string;
   genericName: string;
+  concentration: string;
   supplierName: string;
   minimumStockThreshold: number;
   isExpired: boolean;
@@ -32,13 +33,58 @@ export interface LowStockItem {
   minimumStockThreshold: number;
 }
 
+export type StockAdjustmentType = 
+  | "addition" 
+  | "deduction" 
+  | "damage" 
+  | "expired" 
+  | "correction" 
+  | "returnFromCustomer" 
+  | "returnToSupplier";
+
+  export type StockAdjustmentTypeBackend = 
+  | "Addition" 
+  | "Deduction" 
+  | "Damage" 
+  | "Expired" 
+  | "Correction" 
+  | "ReturnFromCustomer" 
+  | "ReturnToSupplier";
+
 export type BatchFilter = "all" | "available" | "low-stock" | "expiring-soon" | "expired";
 
-export interface StockAdjustmentPayload {
+export interface StockAdjustment {
+  stockAdjustmentId: number;
   drugId: number;
+  drugName: string;
+  batchNumber: string;
+  username: string;
   quantity: number;
   reason: string;
-  type: "Add" | "Remove";
+  adjustmentType: StockAdjustmentType;
+  adjustmentDate: string;
+}
+
+export interface StockAdjustmentPayload {
+  stockBatchId: number;
+  quantity: number;
+  reason: string;
+  adjustmentType: StockAdjustmentTypeBackend;
 }
 
 export type BatchStatus = "Available" | "Low" | "Expired" | "Expiring Soon";
+
+export const toBackendAdjustmentType = (
+  type: StockAdjustmentType
+): StockAdjustmentTypeBackend => {
+  switch (type) {
+    case "addition":           return "Addition";
+    case "deduction":          return "Deduction";
+    case "damage":             return "Damage";
+    case "expired":            return "Expired";
+    case "correction":         return "Correction";
+    case "returnFromCustomer": return "ReturnFromCustomer";
+    case "returnToSupplier":   return "ReturnToSupplier";
+    default:                   return "Addition";
+  }
+};
