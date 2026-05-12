@@ -26,4 +26,5 @@ export const supplierKeys = {
 export const stockBatchKeys = {
   all: ["stockBatches"] as const,
   lists: () => [...stockBatchKeys.all, "list"] as const,
+  detail: (id: number) => [...stockBatchKeys.all, "detail", id] as const,
 };
