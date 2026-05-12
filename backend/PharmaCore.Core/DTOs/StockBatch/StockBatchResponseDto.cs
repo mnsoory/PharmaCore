@@ -16,6 +16,7 @@
 
         public string TradeName { get; set; } = string.Empty;
         public string GenericName { get; set; } = string.Empty;
+        public string Concentration { get; set; } = string.Empty;
         public string SupplierName { get; set; } = string.Empty;
 
         public int MinimumStockThreshold { get; set; }
