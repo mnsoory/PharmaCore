@@ -42,5 +42,13 @@ namespace PharmaCore.API.Controllers
             var result = await _cancellationService.GetAllCancelledSalesAsync();
             return Ok(result);
         }
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<SaleCancellationResponseDto>>> GetAllCancellations()
+        {
+            var result = await _cancellationService.GetAllAsync();
+            return Ok(result);
+        }
     }
 }

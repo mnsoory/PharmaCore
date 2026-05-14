@@ -20,12 +20,24 @@ namespace PharmaCore.Infrastructure.Data.Configurations
                 .IsRequired()
                 .HasDefaultValueSql("GETDATE()");
 
+            builder.Property(sc => sc.CancelledByUserId)
+                .IsRequired();
+
             builder.HasIndex(sc => sc.SaleId)
                 .IsUnique();
 
+            builder.HasIndex(sc => sc.SaleId)
+                .IsUnique();
+
+
             builder.HasOne(sc => sc.Sale)
-                .WithOne()
+                .WithOne(s => s.Cancellation)
                 .HasForeignKey<SaleCancellation>(sc => sc.SaleId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(sc => sc.CancelledByUser)
+                .WithMany()
+                .HasForeignKey(sc => sc.CancelledByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
