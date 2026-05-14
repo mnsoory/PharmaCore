@@ -35,14 +35,29 @@ namespace PharmaCore.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<StockBatch>> GetAllAsync()
+        public async Task<IEnumerable<StockBatch>> GetAllWithSearchAsync(string? searchTerm)
         {
-            return await _context.StockBatches
-                .AsNoTracking()
+            IQueryable<StockBatch> query = _context.StockBatches
+                .AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var term = searchTerm.ToLower().Trim();
+
+                query = query.Where(s =>
+                    (s.Drug.TradeName != null && s.Drug.TradeName.ToLower().Contains(term)) ||
+                    (s.Drug.GenericName != null && s.Drug.GenericName.ToLower().Contains(term)) ||
+                    (s.BatchNumber != null && s.BatchNumber.ToLower().Contains(term)) ||
+                    (s.Drug.Concentration != null && s.Drug.Concentration.ToLower().Contains(term))
+                );
+            }
+
+            query = query
                 .Include(s => s.Supplier)
                 .Include(s => s.Drug)
-                    .ThenInclude(d => d.StockSetting)
-                .ToListAsync();
+                    .ThenInclude(d => d.StockSetting);
+
+            return await query.ToListAsync();
         }
 
         public async Task<IEnumerable<StockBatch>> GetActiveBatchesByDrugIdAsync(int drugId)

@@ -6,7 +6,7 @@ namespace PharmaCore.Core.Interfaces.Repositories
     {
         Task<StockBatch?> GetByIdAsync(int id);
         Task<IEnumerable<StockBatch>> GetByDrugIdAsync(int drugId);
-        Task<IEnumerable<StockBatch>> GetAllAsync();
+        Task<IEnumerable<StockBatch>> GetAllWithSearchAsync(string? searchTerm);
         Task<IEnumerable<StockBatch>> GetActiveBatchesByDrugIdAsync(int drugId);
         Task<IEnumerable<StockBatch>> GetExpiredBatchesAsync();
         Task AddAsync(StockBatch batch);

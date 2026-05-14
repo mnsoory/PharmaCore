@@ -28,9 +28,9 @@ namespace PharmaCore.Application.Services
             return _mapper.Map<StockBatchResponseDto>(batch);
         }
 
-        public async Task<IEnumerable<StockBatchResponseDto>> GetAllAsync()
+        public async Task<IEnumerable<StockBatchResponseDto>> GetAllAsync(string? searchTerm = null)
         {
-            var batches = await _uow.StockBatches.GetAllAsync();
+            var batches = await _uow.StockBatches.GetAllWithSearchAsync(searchTerm);
             return _mapper.Map<IEnumerable<StockBatchResponseDto>>(batches);
         }
 
