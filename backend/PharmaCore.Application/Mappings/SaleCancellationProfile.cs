@@ -10,7 +10,9 @@ namespace PharmaCore.Application.Mappings
     {
         public SaleCancellationProfile()
         {
-            CreateMap<SaleCancellation, SaleCancellationResponseDto>();
+            CreateMap<SaleCancellation, SaleCancellationResponseDto>()
+                .ForMember(dest => dest.CancelledBy, opt => opt.MapFrom(src => src.CancelledByUser.Username))
+                .ForMember(dest => dest.Sale, opt => opt.MapFrom(src => src.Sale));
         }
     }
 }

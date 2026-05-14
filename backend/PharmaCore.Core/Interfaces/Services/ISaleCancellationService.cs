@@ -8,5 +8,6 @@ namespace PharmaCore.Core.Interfaces.Services
         Task<SaleCancellationResponseDto> CancelSaleAsync(CreateSaleCancellationDto dto);
         Task<SaleCancellationResponseDto> GetByIdAsync(int id);
         Task<IEnumerable<SaleResponseDto>> GetAllCancelledSalesAsync();
+        Task<IEnumerable<SaleCancellationResponseDto>> GetAllAsync();
     }
 }

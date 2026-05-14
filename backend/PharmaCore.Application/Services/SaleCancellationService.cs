@@ -12,11 +12,13 @@ namespace PharmaCore.Application.Services
     {
         private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
+        private readonly IUserContextService _userContextService;
 
-        public SaleCancellationService(IUnitOfWork uow, IMapper mapper)
+        public SaleCancellationService(IUnitOfWork uow, IMapper mapper, IUserContextService userContextService)
         {
             _uow = uow;
             _mapper = mapper;
+            _userContextService = userContextService;
         }
 
         public async Task<SaleCancellationResponseDto> CancelSaleAsync(CreateSaleCancellationDto dto)
@@ -42,7 +44,8 @@ namespace PharmaCore.Application.Services
                 var cancellation = new SaleCancellation
                 {
                     SaleId = dto.SaleId,
-                    Reason = dto.Reason
+                    Reason = dto.Reason,
+                    CancelledByUserId = _userContextService.GetUserId(),
                 };
 
                 await _uow.SaleCancellations.AddAsync(cancellation);
@@ -72,6 +75,13 @@ namespace PharmaCore.Application.Services
             var cancelledSales = cancellations.Select(c => c.Sale);
 
             return _mapper.Map<IEnumerable<SaleResponseDto>>(cancelledSales);
+        }
+
+        public async Task<IEnumerable<SaleCancellationResponseDto>> GetAllAsync()
+        {
+            var cancellations = await _uow.SaleCancellations.GetAllAsync();
+
+            return _mapper.Map<IEnumerable<SaleCancellationResponseDto>>(cancellations);
         }
     }
 }
