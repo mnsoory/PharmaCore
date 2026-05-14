@@ -81,13 +81,13 @@ namespace PharmaCore.Application.Services
             return _mapper.Map<IEnumerable<SaleResponseDto>>(sales);
         }
 
-        public async Task<IEnumerable<SaleResponseDto>> GetSalesReportAsync(DateTime from, DateTime to)
+        public async Task<IEnumerable<SaleResponseDto>> GetSalesReportAsync(DateTime? from, DateTime? to)
         {
             var sales = await _uow.Sales.GetSalesByDateRangeAsync(from, to);
             return _mapper.Map<IEnumerable<SaleResponseDto>>(sales);
         }
 
-        public async Task<SalesSummaryDto> GetSalesSummaryAsync(DateTime from, DateTime to)
+        public async Task<SalesSummaryDto> GetSalesSummaryAsync(DateTime? from, DateTime? to)
         {
             var revenue = await _uow.Sales.GetTotalRevenueAsync(from, to);
             var count = await _uow.Sales.GetSalesCountAsync(from, to);

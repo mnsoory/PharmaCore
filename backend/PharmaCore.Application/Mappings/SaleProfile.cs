@@ -21,6 +21,7 @@ namespace PharmaCore.Application.Mappings
 
             CreateMap<SaleItem, SaleItemResponseDto>()
                 .ForMember(dest => dest.DrugName, opt => opt.MapFrom(src => src.Drug.TradeName))
+                .ForMember(dest => dest.Concentration, opt => opt.MapFrom(src => src.Drug.Concentration))
                 .ForMember(dest => dest.BatchNumber, opt => opt.MapFrom(src => src.Batch.BatchNumber));
         }
     }

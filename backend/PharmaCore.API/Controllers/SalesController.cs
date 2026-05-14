@@ -67,7 +67,7 @@ namespace PharmaCore.API.Controllers
         //[Authorize(Roles = "Admin")]
         [HttpGet("report")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<SaleResponseDto>>> GetReport([FromQuery] DateTime from, [FromQuery] DateTime to)
+        public async Task<ActionResult<IEnumerable<SaleResponseDto>>> GetReport([FromQuery] DateTime? from, [FromQuery] DateTime? to)
         {
             var result = await _saleService.GetSalesReportAsync(from, to);
             return Ok(result);

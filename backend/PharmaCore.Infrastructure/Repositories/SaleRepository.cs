@@ -60,33 +60,39 @@ namespace PharmaCore.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Sale>> GetSalesByDateRangeAsync(DateTime from, DateTime to)
+        public async Task<IEnumerable<Sale>> GetSalesByDateRangeAsync(DateTime? from, DateTime? to)
         {
+            var fromDate = from ?? DateTime.UtcNow.Date;
+            var toDate = to?.Date.AddDays(1).AddTicks(-1) ?? DateTime.UtcNow;
+
             return await _context.Sales
                 .AsNoTracking()
                 .Include(s => s.User)
-                .Include(s => s.SaleItems)
-                    .ThenInclude(si => si.Drug)
-                .Include(s => s.SaleItems)
-                    .ThenInclude(si => si.Batch)
-                .Where(s => s.SaleDate >= from && s.SaleDate <= to)
+                .Include(s => s.SaleItems).ThenInclude(si => si.Drug)
+                .Include(s => s.SaleItems).ThenInclude(si => si.Batch)
+                .Where(s => s.SaleDate >= fromDate && s.SaleDate <= toDate)
                 .OrderByDescending(s => s.SaleDate)
                 .ToListAsync();
         }
 
-        public async Task<decimal> GetTotalRevenueAsync(DateTime from, DateTime to)
+        public async Task<decimal> GetTotalRevenueAsync(DateTime? from, DateTime? to)
         {
+            var fromDate = from ?? DateTime.UtcNow.Date;
+            var toDate = to?.Date.AddDays(1).AddTicks(-1) ?? DateTime.UtcNow;
+
             return await _context.Sales
-                .Where(s => s.SaleDate >= from && s.SaleDate <= to)
+                .Where(s => s.SaleDate >= fromDate && s.SaleDate <= toDate)
                 .SumAsync(s => s.TotalAmount);
         }
 
-        public async Task<int> GetSalesCountAsync(DateTime from, DateTime to)
+        public async Task<int> GetSalesCountAsync(DateTime? from, DateTime? to)
         {
-            return await _context.Sales
-                .CountAsync(s => s.SaleDate >= from && s.SaleDate <= to);
-        }
+            var fromDate = from ?? DateTime.UtcNow.Date;
+            var toDate = to?.Date.AddDays(1).AddTicks(-1) ?? DateTime.UtcNow;
 
+            return await _context.Sales
+                .CountAsync(s => s.SaleDate >= fromDate && s.SaleDate <= toDate);
+        }
         public async Task<IEnumerable<DailySalesDto>> GetWeeklySalesAsync()
         {
             var lastSevenDays = DateTime.UtcNow.Date.AddDays(-6);
