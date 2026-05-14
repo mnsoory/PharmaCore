@@ -16,10 +16,9 @@ namespace PharmaCore.Api.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<StockBatchResponseDto>>> GetAll()
+        public async Task<ActionResult<IEnumerable<StockBatchResponseDto>>> GetAll([FromQuery] string? search)
         {
-            var result = await _stockBatchService.GetAllAsync();
+            var result = await _stockBatchService.GetAllAsync(search);
             return Ok(result);
         }
 

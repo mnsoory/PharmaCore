@@ -22,7 +22,7 @@ namespace PharmaCore.Application.Mappings
 
             CreateMap<PurchaseOrder, PurchaseOrderResponseDto>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.Username))
-                .ForMember(dest => dest.SupplierName, opt => opt.MapFrom(src => src.Supplier.Name))
+                .ForMember(dest => dest.SupplierName, opt => opt.MapFrom(src => src.Supplier.CompanyName))
                 .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => src.CreatedAt));
         }
     }
