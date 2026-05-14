@@ -11,9 +11,9 @@ namespace PharmaCore.Core.Interfaces.Repositories
         Task<Sale?> GetByIdAsync(int id);
         Task<IEnumerable<Sale>> GetAllAsync();
         Task<IEnumerable<Sale>> GetByUserIdAsync(int userId);
-        Task<IEnumerable<Sale>> GetSalesByDateRangeAsync(DateTime from, DateTime to);
-        Task<decimal> GetTotalRevenueAsync(DateTime from, DateTime to);
-        Task<int> GetSalesCountAsync(DateTime from, DateTime to);
+        Task<IEnumerable<Sale>> GetSalesByDateRangeAsync(DateTime? from, DateTime? to);
+        Task<decimal> GetTotalRevenueAsync(DateTime? from, DateTime? to);
+        Task<int> GetSalesCountAsync(DateTime? from, DateTime? to);
         Task<IEnumerable<DailySalesDto>> GetWeeklySalesAsync();
     }
 }

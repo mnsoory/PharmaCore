@@ -13,7 +13,8 @@ namespace PharmaCore.Core.Entities
         public PaymentMethod PaymentMethod { get; set; }
         public DateTime SaleDate { get; set; }
 
-        public User User { get; set; }
+        public virtual User User { get; set; }
+        public virtual SaleCancellation Cancellation { get; set; } = null!;
         public ICollection<SaleItem> SaleItems { get; set; } = new HashSet<SaleItem>();
     }
 }
