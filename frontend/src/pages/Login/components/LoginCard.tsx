@@ -32,6 +32,7 @@ const LoginCard: React.FC = () => {
         {
           fullName: response.fullName,
           role: response.role,
+          userName: response.username,
           email: response.email,
         },
         response.token,
