@@ -95,7 +95,7 @@ const StockBatchesPage = () => {
     refetch,
   } = useQuery({
     queryKey: stockBatchKeys.lists(),
-    queryFn: stockBatchService.getAll,
+    queryFn: () => stockBatchService.getAll(),
   });
 
   const [search, setSearch] = useState("");
@@ -188,6 +188,7 @@ const StockBatchesPage = () => {
   }, [stockBatches, search, activeFilter, sortField, sortDir]);
 
   const stats = useMemo(() => {
+    console.log("batches:", stockBatches)
     if (!stockBatches) {
       return {
         total: 0,
