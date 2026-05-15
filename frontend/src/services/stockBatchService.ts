@@ -32,10 +32,14 @@ const transformBatch = (batch: StockBatch): StockBatch => {
 };
 
 export const stockBatchService = {
-  getAll: async (): Promise<StockBatch[]> => {
-    const { data } = await axiosClient.get<StockBatch[]>("/stockbatches");
-    return data.map(transformBatch);
-  },
+getAll: async (searchTerm?: string): Promise<StockBatch[]> => {
+  const { data } = await axiosClient.get<StockBatch[]>("/stockbatches", {
+    params: {
+      search: searchTerm?.trim() || undefined,
+    },
+  });
+  return data.map(transformBatch);
+},
 
   getById: async (id: number): Promise<StockBatch> => {
     const { data } = await axiosClient.get<StockBatch>(`/stockbatches/${id}`);
