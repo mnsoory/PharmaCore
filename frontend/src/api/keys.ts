@@ -27,4 +27,27 @@ export const stockBatchKeys = {
   all: ["stockBatches"] as const,
   lists: () => [...stockBatchKeys.all, "list"] as const,
   detail: (id: number) => [...stockBatchKeys.all, "detail", id] as const,
+  search: (term: string) =>
+    [
+      ...stockBatchKeys.all,
+      "search",
+      term?.toLowerCase().trim() ?? "",
+    ] as const,
+};
+
+export const saleKeys = {
+  all: ["sales"] as const,
+  lists: () => [...saleKeys.all, "list"] as const,
+  mySales: () => [...saleKeys.all, "my-sales"] as const,
+  detail: (id: number) => [...saleKeys.all, "detail", id] as const,
+  summary: (from?: string | null, to?: string | null) => 
+    [...saleKeys.all, "summary", { from, to }] as const,
+  report: (from?: string | null, to?: string | null) => 
+    [...saleKeys.all, "report", { from, to }] as const,
+};
+
+export const returnKeys = {
+  all: ["saleCancellations"] as const,
+  lists: () => [...returnKeys.all, "list"] as const,
+  details: (id: number) => [...returnKeys.all, "detail", id] as const,
 };
