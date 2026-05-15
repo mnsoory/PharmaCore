@@ -2,20 +2,23 @@ export interface Supplier {
   supplierId: number;
   name: string;
   phone: string;
-  company: string;
+  email?: string;
+  contactPerson: string;
   isActive: boolean;
 }
 
 export interface CreateSupplierPayload {
-  name: string;
+  supplierName: string;
   phone: string;
-  company: string;
+  email?: string;
+  contactPerson: string;
 }
 
 export interface UpdateSupplierPayload {
-  name: string;
+  supplierName: string;
   phone: string;
-  company: string;
+  email?: string;
+  contactPerson: string;
   isActive: boolean;
 }
 
