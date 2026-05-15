@@ -10,7 +10,7 @@ import SupplierSearchInput from "@/components/ui/SupplierSearchInput";
 interface SelectedSupplier {
   supplierId: number;
   name: string;
-  company: string;
+  contactPerson: string;
 }
 
 interface SelectedItem extends CreateOrderItem {
@@ -120,7 +120,7 @@ const CreateOrderModal: React.FC<Props> = ({
                 <div className="flex items-center gap-2 rounded-md border border-sidebar-primary/20 bg-sidebar-primary/5 px-3 py-2">
                   <Building2 className="h-3.5 w-3.5 text-sidebar-primary shrink-0" />
                   <span className="text-xs font-medium text-sidebar-primary">
-                    {selectedSupplier.name} — {selectedSupplier.company}
+                    {selectedSupplier.name} — {selectedSupplier.contactPerson}
                   </span>
                   <button
                     type="button"

@@ -14,104 +14,123 @@ import { purchaseOrderKeys } from "@/api/keys";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import ErrorScreen from "@/components/ui/ErrorScreen";
 import { toast } from "sonner";
-import type { PurchaseOrder, OrderFilter, CreateOrderPayload, StatusUpdatePayload } from "@/types/purchaseOrder";
+import type {
+  PurchaseOrder,
+  OrderFilter,
+  CreateOrderPayload,
+  StatusUpdatePayload,
+} from "@/types/purchaseOrder";
 
 const PurchaseOrdersPage = () => {
   const {
-      data: purchaseOrders,
-      isLoading,
-      isFetching,
-      isError,
-      refetch,
-    } = useQuery({
-      queryKey: purchaseOrderKeys.lists(),
-      queryFn: purchaseOrderService.getAll,
-    });
+    data: purchaseOrders,
+    isLoading,
+    isFetching,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: purchaseOrderKeys.lists(),
+    queryFn: purchaseOrderService.getAll,
+  });
 
-  const [search, setSearch]             = useState("");
+  const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<OrderFilter>("all");
-  const [sortField, setSortField]       = useState<keyof PurchaseOrder | null>(null);
-  const [sortDir, setSortDir]           = useState<"asc" | "desc">("asc");
+  const [sortField, setSortField] = useState<keyof PurchaseOrder | null>(null);
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
-  const [viewOrder, setViewOrder]           = useState<PurchaseOrder | null>(null);
-  const [updateOrder, setUpdateOrder]       = useState<PurchaseOrder | null>(null);
+  const [viewOrder, setViewOrder] = useState<PurchaseOrder | null>(null);
+  const [updateOrder, setUpdateOrder] = useState<PurchaseOrder | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const queryClient = useQueryClient();
-const [isCreating, setIsCreating] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
-const [isUpdating, setIsUpdating] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const handleSort = (field: keyof PurchaseOrder) => {
-    if (sortField === field) setSortDir(p => p === "asc" ? "desc" : "asc");
-    else { setSortField(field); setSortDir("asc"); }
+    if (sortField === field) setSortDir((p) => (p === "asc" ? "desc" : "asc"));
+    else {
+      setSortField(field);
+      setSortDir("asc");
+    }
   };
 
   const handleCreate = async (payload: CreateOrderPayload) => {
     setIsCreating(true);
-  try {
-    const newOrder = await purchaseOrderService.create(payload);
-    toast.success(`Purchase order #${newOrder.purchaseOrderId} created successfully`);
-    setShowCreateModal(false);
-    queryClient.invalidateQueries({ queryKey: purchaseOrderKeys.lists() });
-  } catch (err) {
-    if (axios.isAxiosError(err)) {
-      const serverMessage = err.response?.data?.Message || err.response?.data?.message;
-      if (serverMessage) {
-        toast.error(serverMessage);
-      } else if (err.response?.status === 400) {
-        toast.error("Invalid order data. Please check your inputs.");
-      } else if (err.code === "ERR_NETWORK") {
-        toast.error("Connection failed. Please check your network.");
-      } else {
-        toast.error(`Unexpected error (${err.response?.status ?? "Unknown"})`);
+    try {
+      const newOrder = await purchaseOrderService.create(payload);
+      toast.success(
+        `Purchase order #${newOrder.purchaseOrderId} created successfully`,
+      );
+      setShowCreateModal(false);
+      queryClient.invalidateQueries({ queryKey: purchaseOrderKeys.lists() });
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const serverMessage =
+          err.response?.data?.Message || err.response?.data?.message;
+        if (serverMessage) {
+          toast.error(serverMessage);
+        } else if (err.response?.status === 400) {
+          toast.error("Invalid order data. Please check your inputs.");
+        } else if (err.code === "ERR_NETWORK") {
+          toast.error("Connection failed. Please check your network.");
+        } else {
+          toast.error(
+            `Unexpected error (${err.response?.status ?? "Unknown"})`,
+          );
+        }
       }
+    } finally {
+      setIsCreating(false);
     }
-  } finally {
-    setIsCreating(false);
-  }
   };
 
-  const handleStatusUpdate = async (id: number, payload: StatusUpdatePayload) => {
-  setIsUpdating(true);
-  try {
-    await purchaseOrderService.updateStatus(id, payload);
-    toast.success(`Order #${id} status updated to ${payload.newStatus}`);
-    setUpdateOrder(null);
-    queryClient.invalidateQueries({ queryKey: purchaseOrderKeys.lists() });
-  } catch (err) {
-    if (axios.isAxiosError(err)) {
-      const serverMessage = err.response?.data?.Message || err.response?.data?.message;
-      toast.error(serverMessage ?? "Failed to update order status");
+  const handleStatusUpdate = async (
+    id: number,
+    payload: StatusUpdatePayload,
+  ) => {
+    setIsUpdating(true);
+    try {
+      await purchaseOrderService.updateStatus(id, payload);
+      toast.success(`Order #${id} status updated to ${payload.newStatus}`);
+      setUpdateOrder(null);
+      queryClient.invalidateQueries({ queryKey: purchaseOrderKeys.lists() });
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const serverMessage =
+          err.response?.data?.Message || err.response?.data?.message;
+        toast.error(serverMessage ?? "Failed to update order status");
+      }
+    } finally {
+      setIsUpdating(false);
     }
-  } finally {
-    setIsUpdating(false);
-  }
-};
+  };
 
   const filtered = useMemo(() => {
     if (!purchaseOrders) return [];
-    let result = purchaseOrders.filter(o => {
+    let result = purchaseOrders.filter((o) => {
       const matchSearch =
         o.supplierName.toLowerCase().includes(search.toLowerCase()) ||
         String(o.purchaseOrderId).includes(search) ||
         o.userName.toLowerCase().includes(search.toLowerCase());
 
-      const matchFilter = activeFilter === "all" ? true : o.status === activeFilter;
+      const matchFilter =
+        activeFilter === "all" ? true : o.status === activeFilter;
 
       return matchSearch && matchFilter;
     });
 
     if (sortField) {
       result = [...result].sort((a, b) => {
-        const av = a[sortField], bv = b[sortField];
+        const av = a[sortField],
+          bv = b[sortField];
         if (av === bv) return 0;
         return (av < bv ? -1 : 1) * (sortDir === "asc" ? 1 : -1);
       });
     }
 
     return result;
-  },  [purchaseOrders, search, activeFilter, sortField, sortDir]);
+  }, [purchaseOrders, search, activeFilter, sortField, sortDir]);
 
   const stats = useMemo(() => {
     if (!purchaseOrders) {
@@ -144,8 +163,10 @@ const [isUpdating, setIsUpdating] = useState(false);
         description="All supplier purchase orders and their current status"
       >
         <PurchaseOrderToolbar
-          search={search}               onSearch={setSearch}
-          activeFilter={activeFilter}   onFilter={setActiveFilter}
+          search={search}
+          onSearch={setSearch}
+          activeFilter={activeFilter}
+          onFilter={setActiveFilter}
           onNew={() => setShowCreateModal(true)}
         />
         <PurchaseOrderTable
@@ -159,25 +180,28 @@ const [isUpdating, setIsUpdating] = useState(false);
       </TableCard>
 
       {viewOrder && (
-        <OrderDetailsModal order={viewOrder} onClose={() => setViewOrder(null)} />
+        <OrderDetailsModal
+          order={viewOrder}
+          onClose={() => setViewOrder(null)}
+        />
       )}
 
       {updateOrder && (
-  <UpdateStatusModal
-    order={updateOrder}
-    onClose={() => setUpdateOrder(null)}
-    onSubmit={handleStatusUpdate}
-    isSubmitting={isUpdating}
-  />
-)}
+        <UpdateStatusModal
+          order={updateOrder}
+          onClose={() => setUpdateOrder(null)}
+          onSubmit={handleStatusUpdate}
+          isSubmitting={isUpdating}
+        />
+      )}
 
       {showCreateModal && (
-  <CreateOrderModal
-    onClose={() => setShowCreateModal(false)}
-    onSubmit={handleCreate}
-    isSubmitting={isCreating}
-  />
-)}
+        <CreateOrderModal
+          onClose={() => setShowCreateModal(false)}
+          onSubmit={handleCreate}
+          isSubmitting={isCreating}
+        />
+      )}
     </div>
   );
 };

@@ -9,7 +9,7 @@ import { supplierKeys } from "@/api/keys";
 interface SupplierResult {
   supplierId: number;
   name: string;
-  contactName: string;
+  contactPerson: string;
 }
 
 interface Props {
@@ -18,7 +18,7 @@ interface Props {
 }
 
 const SupplierSearchInput: React.FC<Props> = ({
-  placeholder = "Search by company name or contact name...",
+  placeholder = "Search by company name or contact person...",
   onSelect,
 }) => {
   const [query, setQuery] = useState("");
@@ -50,7 +50,7 @@ const SupplierSearchInput: React.FC<Props> = ({
           .map((s) => ({
             supplierId: s.supplierId,
             name: s.name,
-            contactName: s.contactPerson,
+            contactPerson: s.contactPerson,
           }))
       : [];
 
@@ -89,7 +89,7 @@ const SupplierSearchInput: React.FC<Props> = ({
 
   const handleSelect = (supplier: SupplierResult) => {
     onSelect(supplier);
-    setQuery(`${supplier.name} — ${supplier.contactName}`);
+    setQuery(`${supplier.name} — ${supplier.contactPerson}`);
     setShowDropdown(false);
   };
 
@@ -154,7 +154,7 @@ const SupplierSearchInput: React.FC<Props> = ({
                       {s.name}
                     </p>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      {s.contactName}
+                      {s.contactPerson}
                     </p>
                   </div>
                 </button>
