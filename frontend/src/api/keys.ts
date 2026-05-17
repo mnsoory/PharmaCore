@@ -51,3 +51,10 @@ export const returnKeys = {
   lists: () => [...returnKeys.all, "list"] as const,
   details: (id: number) => [...returnKeys.all, "detail", id] as const,
 };
+
+export const userKeys = {
+  all: ["users"] as const,
+  lists: () => [...userKeys.all, "list"] as const,
+  detail: (id: number) => [...userKeys.all, "detail", id] as const,
+  
+};
