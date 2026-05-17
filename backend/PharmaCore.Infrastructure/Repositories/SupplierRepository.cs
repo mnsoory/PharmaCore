@@ -21,11 +21,16 @@ namespace PharmaCore.Infrastructure.Repositories
             await _context.Suppliers.AddAsync(supplier);
         }
 
-        public async Task<IEnumerable<Supplier>> GetAllAsync()
+        public async Task<IEnumerable<Supplier>> GetAllAsync(bool ignoreQueryFilter = false)
         {
-            return await _context.Suppliers
-                .AsNoTracking()
-                .ToListAsync();
+            IQueryable<Supplier> query = _context.Suppliers.AsNoTracking();
+
+            if (ignoreQueryFilter)
+            {
+                query = query.IgnoreQueryFilters();
+            }
+
+            return await query.ToListAsync();
         }
 
         public async Task<IEnumerable<Supplier>> GetAllInActiveAsync()
@@ -39,7 +44,9 @@ namespace PharmaCore.Infrastructure.Repositories
 
         public async Task<Supplier?> GetByIdAsync(int id)
         {
-            return await _context.Suppliers.FindAsync(id);
+            return await _context.Suppliers
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(s => s.SupplierId == id);
         }
 
         public async Task<Supplier?> GetByIdIgnoreQueryFilterAsync(int id)

@@ -8,7 +8,7 @@ namespace PharmaCore.Core.Interfaces.Repositories
     {
         Task<Supplier?> GetByIdAsync(int id);
         Task<Supplier?> GetByIdIgnoreQueryFilterAsync(int id);
-        Task<IEnumerable<Supplier>> GetAllAsync();
+        Task<IEnumerable<Supplier>> GetAllAsync(bool ignoreQueryFilter = false);
         Task<IEnumerable<Supplier>> GetAllInActiveAsync();
         Task AddAsync(Supplier supplier);
         Task<bool> ExistsByPhoneAsync(string phone);

@@ -11,12 +11,12 @@ namespace PharmaCore.Core.DTOs.Supplier
         public string SupplierName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Phone number is required")]
-        [Phone(ErrorMessage = "Invalid phone number format")]
+        [RegularExpression(@"^\+?[0-9]{6,15}$", ErrorMessage = "Phone number must be between 6 and 15 digits and can start with +")]
         [StringLength(20, ErrorMessage = "Phone number cannot exceed 20 characters")]
         public string Phone { get; set; } = string.Empty;
 
         [EmailAddress(ErrorMessage = "Invalid email format")]
-        [StringLength(150, ErrorMessage = "Phone number cannot exceed 20 characters")]
+        [StringLength(150, ErrorMessage = "Email cannot exceed 150 characters")]
         public string? Email { get; set; }
 
         [Required(ErrorMessage = "Contact Person name is required")]

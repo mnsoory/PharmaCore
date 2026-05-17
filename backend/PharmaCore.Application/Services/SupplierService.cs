@@ -51,7 +51,7 @@ namespace PharmaCore.Application.Services
 
         public async Task<IEnumerable<SupplierResponseDto>> GetAllAsync()
         {
-            var suppliers = await _uow.Suppliers.GetAllAsync();
+            var suppliers = await _uow.Suppliers.GetAllAsync(true);
             var suppliersDto = _mapper.Map<IEnumerable<SupplierResponseDto>>(suppliers);
 
             return suppliersDto;
