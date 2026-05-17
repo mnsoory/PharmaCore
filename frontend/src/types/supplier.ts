@@ -2,7 +2,7 @@ export interface Supplier {
   supplierId: number;
   name: string;
   phone: string;
-  email?: string;
+  email?: string | null;
   contactPerson: string;
   isActive: boolean;
 }
@@ -10,14 +10,14 @@ export interface Supplier {
 export interface CreateSupplierPayload {
   supplierName: string;
   phone: string;
-  email?: string;
+  email?: string | null;
   contactPerson: string;
 }
 
 export interface UpdateSupplierPayload {
   supplierName: string;
   phone: string;
-  email?: string;
+  email?: string | null;
   contactPerson: string;
   isActive: boolean;
 }
