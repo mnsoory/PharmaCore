@@ -166,6 +166,27 @@ namespace PharmaCore.Application.Services
             await _uow.CompleteAsync();
         }
 
+        public async Task ResetPasswordByAdminAsync(int userId, ResetPasswordDto dto)
+        {
+            var currentUserId = _userContextService.GetUserId();
+
+            var currentUser = await _uow.Users.GetByIdAsync(currentUserId);
+            if (currentUser == null) throw new NotFoundException("Current authenticated user not found.");
+
+            if (currentUser.Role != UserRole.Admin)
+                throw new BusinessException("Only administrators are allowed to reset user passwords.");
+
+            var user = await _uow.Users.GetByIdAsync(userId);
+            if (user == null) throw new NotFoundException("Target user not found.");
+
+            if (dto.NewPassword != dto.PasswordConfirmation)
+                throw new BusinessException("Passwords do not match.");
+
+            user.PasswordHash = _passwordHasher.HashPassword(dto.NewPassword);
+
+            await _uow.CompleteAsync();
+        }
+
         public async Task<bool> ToggleUserStatusAsync(int userId)
         {
             var user = await _uow.Users.GetByIdAsync(userId);

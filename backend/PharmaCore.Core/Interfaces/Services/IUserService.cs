@@ -18,6 +18,7 @@ namespace PharmaCore.Core.Interfaces.Services
 
         Task UpdateAsync(int userId, UpdateUserDto updateUserDto);
         Task ChangePasswordAsync(ChangePasswordDto changePasswordDto);
+        Task ResetPasswordByAdminAsync(int userId, ResetPasswordDto dto);
         Task<bool> ToggleUserStatusAsync(int userId); 
 
         Task UpdateUserRoleAsync(int userId, string newRole);
