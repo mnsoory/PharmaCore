@@ -62,7 +62,8 @@ namespace PharmaCore.Application.Services
             {
                 DrugId = drug.DrugId,
                 TradeName = drug.TradeName,
-                ScientificName = drug.GenericName,
+                GenericName = drug.GenericName,
+                Concentration = drug.Concentration!,
                 Alternatives = relations.Select(da =>
                 {
                     var alt = da.DrugId == drugId ? da.AlternativeDrug : da.Drug;
@@ -70,7 +71,8 @@ namespace PharmaCore.Application.Services
                     {
                         Id = alt.DrugId,
                         TradeName = alt.TradeName,
-                        GenericName = alt.GenericName
+                        GenericName = alt.GenericName,
+                        Concentration = alt.Concentration!
                     };
                 }).ToList()
             };
