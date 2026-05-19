@@ -7,9 +7,10 @@ export interface User {
   lastname: string;
   fullName: string;
   email: string;
-  phone: string;
+  phone?: string | null;
   role: UserRole;
   isActive: boolean;
+  joinedAt: string;
 }
 
 export interface CreateUserPayload {
