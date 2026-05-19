@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import TableCard from "@/components/ui/table/TableCard";
 import InventoryStatCards from "./components/InventoryStatCards";
 import InventoryToolbar from "./components/InventoryToolbar";
@@ -16,20 +16,9 @@ import LoadingScreen from "@/components/ui/LoadingScreen";
 import ErrorScreen from "@/components/ui/ErrorScreen";
 import EditDrugModal from "./components/EditDrugModal";
 import DrugDetailsModal from "./components/DrugDetailsModal";
-
-// const initialDrugs: Drug[] = [
-//   {
-//     id: 1,
-//     tradeName: "Panadol",
-//     genericName: "Paracetamol",
-//     concentration: "500mg",
-//     category: "Analgesics",
-//     totalAvailableStock: 150,
-//     minimumStock: 50,
-//     averagePurchasePrice: 5.5,
-//     status: "Safe",
-//   },
-// ];
+import { useSearchParams } from "react-router-dom";
+import { checkLowStock } from "@/hooks/useNotificationChecker";
+import { useNotificationStore } from "@/store/useNotificationStore";
 
 const InventoryPage = () => {
   const {
@@ -43,10 +32,6 @@ const InventoryPage = () => {
     queryFn: inventoryService.getAllDrugs,
   });
 
-  // const [drugs] = useState<Drug[]>(initialDrugs);
-  const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
   const [sortField, setSortField] = useState<keyof Drug | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -58,6 +43,38 @@ const InventoryPage = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSettingsOnlyUpdate, setIsSettingsOnlyUpdate] = useState(false);
 
+  const { addNotifications } = useNotificationStore();
+  
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const search = searchParams.get("search") ?? "";
+  const categoryFilter = searchParams.get("category") ?? "";
+  const statusFilter = searchParams.get("status") ?? "";
+
+  const handleSearchChange = (newValue: string) => {
+    setSearchParams((prev) => {
+      if (newValue) prev.set("search", newValue);
+      else prev.delete("search");
+      return prev;
+    });
+  };
+
+  const handleCategoryFilterChange = (newValue: string) => {
+    setSearchParams((prev) => {
+      if (newValue) prev.set("category", newValue);
+      else prev.delete("category");
+      return prev;
+    });
+  };
+
+  const handleStatusFilterChange = (newValue: string) => {
+    setSearchParams((prev) => {
+      if (newValue) prev.set("status", newValue);
+      else prev.delete("status");
+      return prev;
+    });
+  };
+
   const handleEditDrug = async (id: number, data: EditDrugFormData) => {
     setIsEditing(true);
     try {
@@ -68,6 +85,7 @@ const InventoryPage = () => {
         });
       else await inventoryService.updateDrug(id, data);
       toast.success("Drug updated successfully");
+      checkLowStock(addNotifications);
       setEditDrug(null);
       setIsSettingsOnlyUpdate(false);
       queryClient.invalidateQueries({ queryKey: drugKeys.lists() });
@@ -98,7 +116,6 @@ const InventoryPage = () => {
 
   const handleAddDrug = async (drugData: DrugFormData) => {
     setIsSaving(true);
-    console.log("drug", drugData);
     try {
       const newDrug = await inventoryService.createDrug(drugData);
 
@@ -140,27 +157,39 @@ const InventoryPage = () => {
   };
 
   const filtered = useMemo(() => {
-    if (!drugs) return [];
-    let result = drugs.filter(
-      (d) =>
-        (d.tradeName.toLowerCase().includes(search.toLowerCase()) ||
-          d.genericName.toLowerCase().includes(search.toLowerCase()) ||
-          d.concentration.toLowerCase().includes(search.toLowerCase())) &&
-        (categoryFilter ? d.category === categoryFilter : true) &&
-        (statusFilter ? d.status === statusFilter : true),
-    );
+  if (!drugs) return [];
 
-    if (sortField) {
-      result = [...result].sort((a, b) => {
-        const av = a[sortField],
-          bv = b[sortField];
-        if (av === bv) return 0;
-        return (av < bv ? -1 : 1) * (sortDir === "asc" ? 1 : -1);
-      });
-    }
+  const searchWords = search
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((word) => word.trim() !== "");
 
-    return result;
-  }, [drugs, search, categoryFilter, statusFilter, sortField, sortDir]);
+  let result = drugs.filter((d) => {
+    const matchesSearch = searchWords.every((word) => {
+      return (
+        d.tradeName.toLowerCase().includes(word) ||
+        d.genericName.toLowerCase().includes(word) ||
+        d.concentration.toLowerCase().includes(word)
+      );
+    });
+
+    const matchesCategory = categoryFilter ? d.category === categoryFilter : true;
+    const matchesStatus = statusFilter ? d.status === statusFilter : true;
+
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
+
+  if (sortField) {
+    result = [...result].sort((a, b) => {
+      const av = a[sortField],
+        bv = b[sortField];
+      if (av === bv) return 0;
+      return (av < bv ? -1 : 1) * (sortDir === "asc" ? 1 : -1);
+    });
+  }
+
+  return result;
+}, [drugs, search, categoryFilter, statusFilter, sortField, sortDir]);
 
   const stats = useMemo(() => {
     if (!drugs) {
@@ -168,14 +197,14 @@ const InventoryPage = () => {
         totalDrugs: 0,
         lowStock: 0,
         outOfStock: 0,
-        expiringSoon: 0,
+        safeStock: 0,
       };
     }
     return {
       totalDrugs: drugs.length,
       lowStock: drugs.filter((d) => d.status === "Low Stock").length,
       outOfStock: drugs.filter((d) => d.status === "Out of Stock").length,
-      expiringSoon: 0, // to-do later
+      safeStock: drugs.filter((d) => d.status === "Safe").length
     };
   }, [drugs]);
 
@@ -198,11 +227,11 @@ const InventoryPage = () => {
       >
         <InventoryToolbar
           search={search}
-          onSearch={setSearch}
+          onSearch={handleSearchChange}
           categoryFilter={categoryFilter}
-          onCategoryFilter={setCategoryFilter}
+          onCategoryFilter={handleCategoryFilterChange}
           statusFilter={statusFilter}
-          onStatusFilter={setStatusFilter}
+          onStatusFilter={handleStatusFilterChange}
           categories={categories}
           onAdd={() => setIsAddModalOpen(true)}
         />

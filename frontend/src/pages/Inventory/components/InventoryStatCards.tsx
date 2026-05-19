@@ -1,5 +1,5 @@
 import React from "react";
-import { Package, TrendingDown, PackageX, CalendarClock, type LucideIcon } from "lucide-react";
+import { Package, TrendingDown, PackageX, ShieldCheck, type LucideIcon } from "lucide-react";
 
 interface StatItem {
   label: string;
@@ -13,11 +13,11 @@ interface Props {
   totalDrugs: number;
   lowStock: number;
   outOfStock: number;
-  expiringSoon: number;
+  safeStock: number;
 }
 
 const InventoryStatCards: React.FC<Props> = ({
-  totalDrugs, lowStock, outOfStock, expiringSoon,
+  totalDrugs, lowStock, outOfStock, safeStock,
 }) => {
   const stats: StatItem[] = [
     {
@@ -42,11 +42,11 @@ const InventoryStatCards: React.FC<Props> = ({
       borderClass: "border-destructive/20",
     },
     {
-      label: "Expiring Soon",
-      value: expiringSoon,
-      icon: CalendarClock,
-      iconClass: "bg-orange-100 text-orange-500 dark:bg-orange-950 dark:text-orange-400",
-      borderClass: "border-orange-200 dark:border-orange-800",
+      label: "Safe Stock",
+      value: safeStock,
+      icon: ShieldCheck, 
+      iconClass: "bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400",
+      borderClass: "border-emerald-200 dark:border-emerald-800/60",
     },
   ];
 
