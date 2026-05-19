@@ -58,3 +58,8 @@ export const userKeys = {
   detail: (id: number) => [...userKeys.all, "detail", id] as const,
   
 };
+
+export const profileKeys = {
+  all: ["profile"] as const,
+  detail: () => [...profileKeys.all, "detail"] as const,
+};
