@@ -15,5 +15,6 @@ namespace PharmaCore.Core.DTOs.User
         public string? Phone { get; set; }
         public UserRole Role { get; set; }
         public bool IsActive { get; set; }
+        public DateTime JoinedAt { get; set; }
     }
 }
