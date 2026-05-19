@@ -1,15 +1,16 @@
 // src/store/useAuthStore.ts
-import { create } from 'zustand';
-import type { User } from '../types/auth';
-
+import { create } from "zustand";
+import type { AuthUser } from "@/types/auth";
 
 interface AuthState {
-  user: User | null;
+  user: AuthUser | null;
   token: string | null;
   isAuthenticated: boolean;
-  
-  setAuth: (user: User, token: string) => void;
-  
+
+  setAuth: (user: AuthUser, token: string) => void;
+
+  updateUser: (partial: Partial<AuthUser>) => void;
+
   clearAuth: () => void;
 }
 
@@ -24,9 +25,18 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ user, token, isAuthenticated: true });
   },
 
+  updateUser: (partial) => {
+  set(state => {
+    if (!state.user) return state;
+    const updated = { ...state.user, ...partial };
+    localStorage.setItem("user", JSON.stringify(updated));
+    return { user: updated };
+  });
+},
+
   clearAuth: () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     set({ user: null, token: null, isAuthenticated: false });
-  }
+  },
 }));

@@ -14,7 +14,7 @@ export interface LoginRequest {
   rememberMe: boolean;
 }
 
-export interface User {
+export interface AuthUser {
   fullName: string;
   userName: string;
   role: string;
