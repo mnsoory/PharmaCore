@@ -12,17 +12,12 @@ const transformBatch = (batch: StockBatch): StockBatch => {
 
   const daysUntilExpiry = differenceInDays(expiryDate, today);
 
-  let status: StockBatch["status"] = "Available";
+  let status: StockBatch["status"] = "Safe";
 
   if (batch.isExpired || isBefore(expiryDate, today)) {
     status = "Expired";
   } else if (daysUntilExpiry <= 90) {
     status = "Expiring Soon";
-  } else if (
-    batch.remainingQty < batch.minimumStockThreshold &&
-    batch.remainingQty > 0
-  ) {
-    status = "Low";
   }
 
   return {

@@ -4,8 +4,7 @@ import type { BatchFilter } from "@/types/stockBatch";
 
 const filterOptions: { label: string; value: BatchFilter }[] = [
   { label: "All Batches",    value: "all"           },
-  { label: "Available",      value: "available"     },
-  { label: "Low Stock",      value: "low-stock"     },
+  { label: "Safe",      value: "safe"     },
   { label: "Expiring Soon",  value: "expiring-soon" },
   { label: "Expired",        value: "expired"       },
 ];

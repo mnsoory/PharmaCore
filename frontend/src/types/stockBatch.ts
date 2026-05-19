@@ -15,7 +15,7 @@ export interface StockBatch {
   supplierName: string;
   minimumStockThreshold: number;
   isExpired: boolean;
-  status: "Available" | "Low" | "Expired" | "Expiring Soon";
+  status: BatchStatus;
 }
 
 export interface ExpiringSoonResponse {
@@ -51,7 +51,7 @@ export type StockAdjustmentType =
   | "ReturnFromCustomer" 
   | "ReturnToSupplier";
 
-export type BatchFilter = "all" | "available" | "low-stock" | "expiring-soon" | "expired";
+export type BatchFilter = "all" | "safe" | "expiring-soon" | "expired";
 
 export interface StockAdjustment {
   stockAdjustmentId: number;
@@ -72,7 +72,7 @@ export interface StockAdjustmentPayload {
   adjustmentType: StockAdjustmentTypeBackend;
 }
 
-export type BatchStatus = "Available" | "Low" | "Expired" | "Expiring Soon";
+export type BatchStatus = "Safe" | "Expired" | "Expiring Soon";
 
 export const toBackendAdjustmentType = (
   type: StockAdjustmentType

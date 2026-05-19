@@ -12,79 +12,15 @@ import { useQuery } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import ErrorScreen from "@/components/ui/ErrorScreen";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
+import { checkLowStock } from "@/hooks/useNotificationChecker";
+import { useNotificationStore } from "@/store/useNotificationStore";
 import type {
   StockBatch,
   StockAdjustmentPayload,
   BatchFilter,
 } from "@/types/stockBatch";
-
-// const mockBatches: StockBatch[] = [
-//   {
-//     id: 1,
-//     drugId: 1,
-//     tradeName: "Panadol",
-//     genericName: "Paracetamol",
-//     batchNumber: "BTH-001",
-//     quantity: 150,
-//     expiryDate: "2026-12-01",
-//     purchasePrice: 5.5,
-//     status: "Available",
-//     productionDate: "2024-01-01",
-//     remainingQty: 150,
-//     supplierId: 101,
-//     purchaseOrderItemId: 501,
-//     supplierName: "Global Pharma",
-//   },
-//   {
-//     id: 2,
-//     drugId: 2,
-//     tradeName: "Amoxil",
-//     genericName: "Amoxicillin",
-//     batchNumber: "BTH-002",
-//     quantity: 15,
-//     expiryDate: "2025-06-15",
-//     purchasePrice: 12.0,
-//     status: "Low",
-//     productionDate: "2024-03-15",
-//     remainingQty: 15,
-//     supplierId: 102,
-//     purchaseOrderItemId: 502,
-//     supplierName: "HealthCare Supplies",
-//   },
-//   {
-//     id: 3,
-//     drugId: 3,
-//     tradeName: "Augmentin",
-//     genericName: "Co-amoxiclav",
-//     batchNumber: "BTH-003",
-//     quantity: 0,
-//     expiryDate: "2025-03-01",
-//     purchasePrice: 25.0,
-//     status: "Expired",
-//     productionDate: "2023-03-01",
-//     remainingQty: 0,
-//     supplierId: 101,
-//     purchaseOrderItemId: 503,
-//     supplierName: "Global Pharma",
-//   },
-//   {
-//     id: 4,
-//     drugId: 1,
-//     tradeName: "Panadol",
-//     genericName: "Paracetamol",
-//     batchNumber: "BTH-004",
-//     quantity: 80,
-//     expiryDate: "2025-07-20",
-//     purchasePrice: 5.5,
-//     status: "Expiring Soon",
-//     productionDate: "2024-07-20",
-//     remainingQty: 80,
-//     supplierId: 103,
-//     purchaseOrderItemId: 504,
-//     supplierName: "Modern Med",
-//   },
-// ];
 
 const StockBatchesPage = () => {
   const {
@@ -98,13 +34,34 @@ const StockBatchesPage = () => {
     queryFn: () => stockBatchService.getAll(),
   });
 
-  const [search, setSearch] = useState("");
-  const [activeFilter, setActiveFilter] = useState<BatchFilter>("all");
   const [sortField, setSortField] = useState<keyof StockBatch | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [selectedBatch, setSelectedBatch] = useState<StockBatch | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const queryClient = useQueryClient();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const search = searchParams.get("search") ?? "";
+  const activeFilter = (searchParams.get("filter") as BatchFilter) ?? "all";
+
+  const { addNotifications } = useNotificationStore();
+
+  const handleSearchChange = (newValue: string) => {
+    setSearchParams((prev) => {
+      if (newValue) prev.set("search", newValue);
+      else prev.delete("search");
+      return prev;
+    });
+  };
+
+  const handleFilterChange = (newFilter: BatchFilter) => {
+    setSearchParams((prev) => {
+      if (newFilter && newFilter !== "all") prev.set("filter", newFilter);
+      else prev.delete("filter");
+      return prev;
+    });
+  };
 
   const handleSort = (field: keyof StockBatch) => {
     if (sortField === field) setSortDir((p) => (p === "asc" ? "desc" : "asc"));
@@ -116,7 +73,7 @@ const StockBatchesPage = () => {
 
   const handleAdjustment = async (adjustment: StockAdjustmentPayload) => {
     setIsCreating(true);
-    console.log("adj:", adjustment)
+    console.log("adj:", adjustment);
     try {
       const newAdjustment = await stockAdjustmentService.create(adjustment);
       toast.success(
@@ -126,6 +83,11 @@ const StockBatchesPage = () => {
         },
       );
       setSelectedBatch(null);
+      const isAddition = [
+        "addition",
+        "returnFromCustomer",
+      ].includes(adjustment.adjustmentType);
+      if (!isAddition) checkLowStock(addNotifications);
       queryClient.invalidateQueries({ queryKey: stockBatchKeys.lists() });
       queryClient.invalidateQueries({
         queryKey: stockBatchKeys.detail(adjustment.stockBatchId),
@@ -159,18 +121,14 @@ const StockBatchesPage = () => {
         b.genericName.toLowerCase().includes(search.toLowerCase()) ||
         b.batchNumber.toLowerCase().includes(search.toLowerCase());
 
-      const matchFilter =
-        activeFilter === "all"
-          ? true
-          : activeFilter === "available"
-            ? b.status === "Available"
-            : activeFilter === "low-stock"
-              ? b.status === "Low"
-              : activeFilter === "expiring-soon"
-                ? b.status === "Expiring Soon"
-                : activeFilter === "expired"
-                  ? b.status === "Expired"
-                  : true;
+      const matchFilter = (() => {
+        if (activeFilter === "all") return true;
+        if (activeFilter === "safe") return b.status === "Safe";
+        if (activeFilter === "expiring-soon")
+          return b.status === "Expiring Soon";
+        if (activeFilter === "expired") return b.status === "Expired";
+        return true;
+      })();
 
       return matchSearch && matchFilter;
     });
@@ -188,13 +146,13 @@ const StockBatchesPage = () => {
   }, [stockBatches, search, activeFilter, sortField, sortDir]);
 
   const stats = useMemo(() => {
-    console.log("batches:", stockBatches)
+    console.log("batches:", stockBatches);
     if (!stockBatches) {
       return {
         total: 0,
         expiringSoon: 0,
         expired: 0,
-        lowStock: 0,
+        available: 0,
       };
     }
 
@@ -203,7 +161,9 @@ const StockBatchesPage = () => {
       expiringSoon: stockBatches.filter((b) => b.status === "Expiring Soon")
         .length,
       expired: stockBatches.filter((b) => b.status === "Expired").length,
-      lowStock: stockBatches.filter((b) => b.status === "Low").length,
+      available: stockBatches.filter(
+        (b) => b.status !== "Expired" && b.remainingQty > 0,
+      ).length,
     };
   }, [stockBatches]);
 
@@ -222,9 +182,9 @@ const StockBatchesPage = () => {
       >
         <StockBatchToolbar
           search={search}
-          onSearch={setSearch}
+          onSearch={handleSearchChange}
           activeFilter={activeFilter}
-          onFilter={setActiveFilter}
+          onFilter={handleFilterChange}
         />
         <StockBatchTable
           batches={filtered}
