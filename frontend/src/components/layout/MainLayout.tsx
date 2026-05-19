@@ -4,9 +4,11 @@ import Header from "./Header/Header";
 import Sidebar from "./Sidebar/Sidebar";
 import Footer from "@/components/ui/Footer";
 import { useSidebarStore } from "@/store/useSidebarStore";
+import { useNotificationChecker } from "@/hooks/useNotificationChecker";
 
 const MainLayout: React.FC = () => {
   const { collapsed } = useSidebarStore();
+  useNotificationChecker();
 
   return (
     <div className="flex h-screen overflow-hidden">
