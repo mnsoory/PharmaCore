@@ -99,6 +99,17 @@ namespace PharmaCore.Application.Services
             return _mapper.Map<UserResponseDto>(user);
         }
 
+        public async Task<UserResponseDto> GetCurrentUserAsync()
+        {
+            var currentUserId = _userContextService.GetUserId();
+
+            var currentUser = await _uow.Users.GetByIdAsync(currentUserId);
+            if (currentUser == null) 
+                throw new UnauthorizedException("Current user session is invalid or user does not exist.");
+
+            return _mapper.Map<UserResponseDto>(currentUser);
+        }
+
         public async Task<IEnumerable<UserResponseDto>> GetAllAsync()
         {
             var users = await _uow.Users.GetAllAsync();

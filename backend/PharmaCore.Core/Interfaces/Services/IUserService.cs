@@ -13,6 +13,7 @@ namespace PharmaCore.Core.Interfaces.Services
         Task<AuthResponseDto> LoginAsync(LoginRequestDto loginDto);
 
         Task<UserResponseDto> GetByIdAsync(int userId);
+        Task<UserResponseDto> GetCurrentUserAsync();
         Task<IEnumerable<UserResponseDto>> GetAllAsync();
         Task<UserResponseDto> GetByUsernameAsync(string username);
 
