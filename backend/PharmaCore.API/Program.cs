@@ -141,25 +141,66 @@ builder.Services.AddAuthentication()
 
 builder.Services.AddRateLimiter(options =>
 {
-    options.AddPolicy(policyName: "LoginPolicy", context =>
-    {
-        return RateLimitPartition.GetFixedWindowLimiter(
+    options.AddPolicy("GlobalPolicy", context =>
+        RateLimitPartition.GetSlidingWindowLimiter(
+            partitionKey: context.User.Identity?.Name ?? context.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+            factory: _ => new SlidingWindowRateLimiterOptions
+            {
+                PermitLimit = 100,
+                Window = TimeSpan.FromMinutes(1),
+                SegmentsPerWindow = 4,
+                QueueLimit = 0
+            }));
+
+    options.AddPolicy("LoginPolicy", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
             partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? context.Request.Headers.Host.ToString(),
             factory: _ => new FixedWindowRateLimiterOptions
             {
                 PermitLimit = 5,
                 Window = TimeSpan.FromMinutes(30),
-                QueueLimit = 0,
-                QueueProcessingOrder = QueueProcessingOrder.OldestFirst
-            });
-    });
+                QueueLimit = 0
+            }));
+
+    options.AddPolicy("ChangePasswordPolicy", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.User.Identity?.Name ?? context.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 3,
+                Window = TimeSpan.FromMinutes(15),
+                QueueLimit = 0
+            }));
 
     options.OnRejected = async (context, token) =>
     {
         context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+
+        var endpoint = context.HttpContext.GetEndpoint();
+        var rateLimitingAttribute = endpoint?.Metadata.GetMetadata<EnableRateLimitingAttribute>();
+        var policyName = rateLimitingAttribute?.PolicyName;
+
+        if (policyName == "LoginPolicy")
+        {
+            await context.HttpContext.Response.WriteAsJsonAsync(new
+            {
+                message = "Too many login attempts. Please try again after 30 minutes."
+            }, token);
+            return;
+        }
+
+        if (policyName == "ChangePasswordPolicy")
+        {
+            await context.HttpContext.Response.WriteAsJsonAsync(new
+            {
+                message = "Too many password change attempts. Please try again after 15 minutes."
+            }, token);
+            return;
+        }
+
         await context.HttpContext.Response.WriteAsJsonAsync(new
         {
-            message = "Too many login attempts. Please try again after 30 minutes."
+            message = "Too many requests. Please slow down and try again later."
         }, token);
     };
 });

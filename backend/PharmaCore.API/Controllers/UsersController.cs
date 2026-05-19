@@ -62,6 +62,15 @@ namespace PharmaCore.API.Controllers
             return Ok(user);
         }
 
+        [HttpGet("profile")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<UserResponseDto>> GetProfile()
+        {
+            var result = await _userService.GetCurrentUserAsync();
+            return Ok(result);
+        }
+
         [HttpGet("username/{username}")]
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -94,6 +103,7 @@ namespace PharmaCore.API.Controllers
 
         [HttpPatch("password")]
         [Authorize(Roles = "Admin,Pharmacist,Assistant")]
+        [EnableRateLimiting("ChangePasswordPolicy")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
