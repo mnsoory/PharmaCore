@@ -53,6 +53,10 @@ namespace PharmaCore.Infrastructure.Data.Configurations
             builder.Property(u => u.IsDeleted)
                    .HasDefaultValue(false);
 
+            builder.Property(u => u.JoinedAt)
+                   .IsRequired()
+                   .HasDefaultValueSql("GETUTCDATE()");
+
             // Global Query Filter (Soft Delete)
             builder.HasQueryFilter(u => !u.IsDeleted);
         }
