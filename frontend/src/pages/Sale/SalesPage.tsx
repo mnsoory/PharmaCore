@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import ErrorScreen from "@/components/ui/ErrorScreen";
+import { checkLowStock } from "@/hooks/useNotificationChecker";
+import { useNotificationStore } from "@/store/useNotificationStore";
 
 const tabs: { id: SalesTab; label: string }[] = [
   { id: "overview", label: "Overview" },
@@ -37,6 +39,8 @@ const SalesPage = () => {
 
   const queryClient = useQueryClient();
   const [isCreating, setIsCreating] = useState(false);
+
+  const { addNotifications } = useNotificationStore();
 
   const {
     data: sales,
@@ -85,6 +89,7 @@ const SalesPage = () => {
       const newSale = await saleService.create(payload);
       toast.success(`Sale #${newSale.saleId} created successfully`);
       setShowNewSale(false);
+      checkLowStock(addNotifications);
       queryClient.invalidateQueries({ queryKey: saleKeys.all });
     } catch (err) {
       if (axios.isAxiosError(err)) {
