@@ -115,7 +115,9 @@ const StaffPage = () => {
     setIsToggling(true);
     try {
       await userService.toggleStatus(user.userId);
-      toast.success(`User #${user.userId} ${user.isActive ? "deactivated" : "activated"} successfully`);
+      toast.success(
+        `User #${user.userId} ${user.isActive ? "deactivated" : "activated"} successfully`,
+      );
       queryClient.invalidateQueries({ queryKey: userKeys.lists() });
     } catch (err) {
       handleApiError(err);
@@ -124,7 +126,10 @@ const StaffPage = () => {
     }
   };
 
-  const handleResetPassword = async (id: number, payload: ResetPasswordPayload) => {
+  const handleResetPassword = async (
+    id: number,
+    payload: ResetPasswordPayload,
+  ) => {
     setIsResetting(true);
     try {
       await userService.resetPassword(id, payload);
@@ -167,8 +172,8 @@ const StaffPage = () => {
 
     if (sortField) {
       result = [...result].sort((a, b) => {
-        const av = a[sortField],
-          bv = b[sortField];
+        const av = a[sortField] ?? "",
+          bv = b[sortField] ?? "";
         if (av === bv) return 0;
         return (av < bv ? -1 : 1) * (sortDir === "asc" ? 1 : -1);
       });
