@@ -45,7 +45,7 @@ const StockBatchesPage = () => {
   const search = searchParams.get("search") ?? "";
   const activeFilter = (searchParams.get("filter") as BatchFilter) ?? "all";
 
-  const { addNotifications } = useNotificationStore();
+  const { addNotifications, settings } = useNotificationStore();
 
   const handleSearchChange = (newValue: string) => {
     setSearchParams((prev) => {
@@ -87,7 +87,7 @@ const StockBatchesPage = () => {
         "addition",
         "returnFromCustomer",
       ].includes(adjustment.adjustmentType);
-      if (!isAddition) checkLowStock(addNotifications);
+      if (!isAddition) checkLowStock(addNotifications, settings.lowStock);
       queryClient.invalidateQueries({ queryKey: stockBatchKeys.lists() });
       queryClient.invalidateQueries({
         queryKey: stockBatchKeys.detail(adjustment.stockBatchId),
