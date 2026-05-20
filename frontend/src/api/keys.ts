@@ -40,9 +40,9 @@ export const saleKeys = {
   lists: () => [...saleKeys.all, "list"] as const,
   mySales: () => [...saleKeys.all, "my-sales"] as const,
   detail: (id: number) => [...saleKeys.all, "detail", id] as const,
-  summary: (from?: string | null, to?: string | null) => 
+  summary: (from?: string | null, to?: string | null) =>
     [...saleKeys.all, "summary", { from, to }] as const,
-  report: (from?: string | null, to?: string | null) => 
+  report: (from?: string | null, to?: string | null) =>
     [...saleKeys.all, "report", { from, to }] as const,
 };
 
@@ -56,10 +56,14 @@ export const userKeys = {
   all: ["users"] as const,
   lists: () => [...userKeys.all, "list"] as const,
   detail: (id: number) => [...userKeys.all, "detail", id] as const,
-  
 };
 
 export const profileKeys = {
   all: ["profile"] as const,
   detail: () => [...profileKeys.all, "detail"] as const,
+};
+
+export const stockSettingsKeys = {
+  all: ["stockSettings"] as const,
+  lists: () => ["stockSettings", "list"] as const,
 };
