@@ -9,8 +9,9 @@ import { drugKeys } from "@/api/keys";
 interface DrugResult {
   drugId: number;
   tradeName: string;
-  concentration: string;
+  concentration: string | null;
   genericName: string;
+  minimumStock: number;
 }
 
 interface Props {
@@ -47,7 +48,7 @@ const DrugSearchInput: React.FC<Props> = ({
           !excludeIds.includes(d.id)
         )
         .slice(0, 8)
-        .map(d => ({ drugId: d.id, tradeName: d.tradeName, genericName: d.genericName, concentration: d.concentration }))
+        .map(d => ({ drugId: d.id, tradeName: d.tradeName, genericName: d.genericName, concentration: d.concentration, minimumStock: d.minimumStock }))
     : [];
 
   useEffect(() => {
