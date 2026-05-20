@@ -43,8 +43,8 @@ const InventoryPage = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSettingsOnlyUpdate, setIsSettingsOnlyUpdate] = useState(false);
 
-  const { addNotifications } = useNotificationStore();
-  
+  const { addNotifications, settings } = useNotificationStore();
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   const search = searchParams.get("search") ?? "";
@@ -85,7 +85,7 @@ const InventoryPage = () => {
         });
       else await inventoryService.updateDrug(id, data);
       toast.success("Drug updated successfully");
-      checkLowStock(addNotifications);
+      checkLowStock(addNotifications, settings.lowStock);
       setEditDrug(null);
       setIsSettingsOnlyUpdate(false);
       queryClient.invalidateQueries({ queryKey: drugKeys.lists() });
