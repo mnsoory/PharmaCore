@@ -37,8 +37,8 @@ const StockBar: React.FC<{ current: number; threshold: number }> = ({
     pct < 40
       ? "bg-destructive/10"
       : pct < 90
-        ? "bg-warning/10"
-        : "bg-success/10";
+        ? "bg-warning/50"
+        : "bg-success/70";
 
   return (
     <div className="flex flex-col gap-1.5">
