@@ -45,7 +45,7 @@ const NotificationsCard: React.FC = () => {
 
         {/* Low Stock */}
         <div className="flex items-center gap-4 py-4 border-b border-border">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-warning/15 text-warning-foreground">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-warning/35 text-warning-foreground">
             <Package className="h-5 w-5" strokeWidth={1.5} />
           </div>
           <div className="flex-1 min-w-0">
@@ -85,9 +85,9 @@ const NotificationsCard: React.FC = () => {
               </p>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { label: "30 Days",  key: "expiry30" as const, color: "text-emerald-600", enabled: settings.expiry30 },
+                  { label: "30 Days",  key: "expiry30" as const, color: "text-destructive", enabled: settings.expiry30 },
                   { label: "60 Days",  key: "expiry60" as const, color: "text-orange-500",  enabled: settings.expiry60 },
-                  { label: "90 Days",  key: "expiry90" as const, color: "text-destructive", enabled: settings.expiry90 },
+                  { label: "90 Days",  key: "expiry90" as const, color: "text-emerald-600", enabled: settings.expiry90 },
                 ].map(({ label, key, color, enabled }) => (
                   <div key={key} className="flex items-center justify-between gap-2">
                     <span className={`text-[11px] font-bold uppercase tracking-tight ${color}`}>{label}</span>
