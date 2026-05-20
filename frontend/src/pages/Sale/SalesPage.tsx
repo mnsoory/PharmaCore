@@ -40,7 +40,7 @@ const SalesPage = () => {
   const queryClient = useQueryClient();
   const [isCreating, setIsCreating] = useState(false);
 
-  const { addNotifications } = useNotificationStore();
+  const { addNotifications, settings } = useNotificationStore();
 
   const {
     data: sales,
@@ -89,7 +89,7 @@ const SalesPage = () => {
       const newSale = await saleService.create(payload);
       toast.success(`Sale #${newSale.saleId} created successfully`);
       setShowNewSale(false);
-      checkLowStock(addNotifications);
+      checkLowStock(addNotifications, settings.lowStock);
       queryClient.invalidateQueries({ queryKey: saleKeys.all });
     } catch (err) {
       if (axios.isAxiosError(err)) {
