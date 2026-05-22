@@ -1,0 +1,47 @@
+:80 {
+
+    # Security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Frame-Options           "SAMEORIGIN"
+        X-Content-Type-Options    "nosniff"
+        X-XSS-Protection          "1; mode=block"
+        Referrer-Policy           "strict-origin-when-cross-origin"
+        Permissions-Policy        "camera=(), microphone=(), geolocation=()"
+        -Server
+    }
+
+    # API Routing
+    handle /api/* {
+        reverse_proxy backend:8080 {
+            header_up  Host              {host}
+            header_up  X-Real-IP         {remote_host}
+            header_up  X-Forwarded-For   {remote_host}
+            header_up  X-Forwarded-Proto {scheme}
+
+            transport http {
+                dial_timeout       10s
+                response_header_timeout 60s
+            }
+
+            #health_uri     /health
+            #health_interval 30s
+        }
+    }
+
+    # Frontend Routing
+    handle {
+        reverse_proxy frontend:80 {
+            header_up Host            {host}
+            header_up X-Real-IP       {remote_host}
+            header_up X-Forwarded-For {remote_host}
+        }
+    }
+
+    # Logging configuration
+    log {
+        output stdout
+        format  json
+        level   INFO
+    }
+}
