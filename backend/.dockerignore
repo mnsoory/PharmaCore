@@ -1,0 +1,22 @@
+# Build & IDE outputs
+**/obj/
+**/bin/
+**/.vs/
+**/*.user
+**/*.suo
+
+# NuGet cache files
+**/project.assets.json
+**/*.nuget.cache
+**/*.nuget.dgspec.json
+**/*.nuget.g.props
+**/*.nuget.g.targets
+
+# Docker configs
+Dockerfile
+*.Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Exclude frontend source
+../frontend/
