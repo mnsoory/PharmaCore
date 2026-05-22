@@ -2,7 +2,8 @@ import axios from "axios";
 import { useAuthStore } from "../store/useAuthStore";
 
 const axiosClient = axios.create({
-  baseURL: "https://localhost:7283/api",
+  baseURL: "/api",
+  // baseURL: "https://localhost:7283/api",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
@@ -19,25 +20,28 @@ axiosClient.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
-
 
 axiosClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    const isLoginRequest = originalRequest.url?.includes('/users/login');
+    const isLoginRequest = originalRequest.url?.includes("/users/login");
 
-    if (error.response?.status === 401 && !originalRequest._retry && !isLoginRequest) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isLoginRequest
+    ) {
       originalRequest._retry = true;
 
       try {
         const response = await axios.post(
-          'https://localhost:7283/api/users/refresh-token', 
-          {}, 
-          { withCredentials: true }
+          "/api/users/refresh-token",
+          {},
+          { withCredentials: true },
         );
 
         const { token } = response.data;
@@ -45,7 +49,6 @@ axiosClient.interceptors.response.use(
 
         originalRequest.headers.Authorization = `Bearer ${token}`;
         return axiosClient(originalRequest);
-        
       } catch (refreshError) {
         useAuthStore.getState().clearAuth();
         return Promise.reject(refreshError);
@@ -53,7 +56,7 @@ axiosClient.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axiosClient;
