@@ -216,6 +216,32 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+if (args.Contains("--migrate-only") || Environment.GetEnvironmentVariable("MIGRATE_ONLY") == "true")
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        var logger = services.GetRequiredService<ILogger<Program>>();
+
+        logger.LogInformation("PharmaCore Migrator: Starting database migrations...");
+
+        try
+        {
+            var context = services.GetRequiredService<AppDbContext>();
+            await context.Database.MigrateAsync();
+            logger.LogInformation("PharmaCore Migrator: Migrations applied successfully!");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "PharmaCore Migrator: An error occurred while migrating the database.");
+            Environment.Exit(1);
+        }
+    }
+
+    Console.WriteLine("PharmaCore Migrator: Work done. Exiting safely.");
+    Environment.Exit(0);
+}
+
 app.UseHttpsRedirection();
 
 app.UseCors();
