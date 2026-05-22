@@ -1,0 +1,13 @@
+# Secrets — NEVER commit
+.env
+*.pfx
+*.pem
+*.key
+
+# Docker generated
+caddy_data/
+caddy_config/
+
+# OS
+.DS_Store
+Thumbs.db
