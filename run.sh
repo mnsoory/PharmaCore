@@ -13,17 +13,17 @@ HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $
 
 if [ "$HTTP_STATUS" -eq 200 ]; then
     echo "Found remote backup, downloading..."
-    curl -L -H "Authorization: Bearer ${HF_TOKEN}" -o /var/opt/mssql/data/PharmaCoreDb.bak "$BACKUP_URL"
+    curl -L -H "Authorization: Bearer ${HF_TOKEN}" -o /app/backend/PharmaCoreDb.bak "$BACKUP_URL"
     
     echo "Restoring database..."
     /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "
     RESTORE DATABASE PharmaCoreDb 
-    FROM DISK = '/var/opt/mssql/data/PharmaCoreDb.bak' 
+    FROM DISK = '/app/backend/PharmaCoreDb.bak' 
     WITH MOVE 'PharmaCoreDb' TO '/var/opt/mssql/data/PharmaCoreDb.mdf', 
     MOVE 'PharmaCoreDb_log' TO '/var/opt/mssql/data/PharmaCoreDb_log.ldf', 
     REPLACE;"
 else
-    echo "No remote backup found or dataset unavailable (Status: $HTTP_STATUS). Skipping restore."
+    echo "No remote backup found. Skipping restore."
 fi
 
 cd /app/backend && dotnet PharmaCore.API.dll --urls "http://localhost:8080" &
@@ -34,13 +34,13 @@ while true
 do
     sleep 300
     echo "Creating scheduled backup..."
-    /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "BACKUP DATABASE PharmaCoreDb TO DISK = '/var/opt/mssql/data/PharmaCoreDb.bak' WITH FORMAT, INIT;"
+    /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "BACKUP DATABASE PharmaCoreDb TO DISK = '/app/backend/PharmaCoreDb.bak' WITH FORMAT, INIT;"
     
-    if [ -f "/var/opt/mssql/data/PharmaCoreDb.bak" ]; then
+    if [ -f "/app/backend/PharmaCoreDb.bak" ]; then
         echo "Uploading backup to Hugging Face..."
         curl -X PUT \
              -H "Authorization: Bearer ${HF_TOKEN}" \
-             --data-binary @/var/opt/mssql/data/PharmaCoreDb.bak \
+             --data-binary @/app/backend/PharmaCoreDb.bak \
              "https://huggingface.co/api/datasets/${REPO_ID}/upload/main/PharmaCoreDb.bak"
     fi
 done
