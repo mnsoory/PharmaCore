@@ -1,6 +1,6 @@
 #!/bin/bash
 
-/opt/mssql/bin/sqlservr --force-flush=1 &
+/opt/mssql/bin/sqlservr &
 
 echo "Waiting for SQL Server..."
 until /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "SELECT 1" &>/dev/null
