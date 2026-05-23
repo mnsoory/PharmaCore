@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y \
     curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg && \
     curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list && \
     apt-get update && apt-get install -y caddy && \
-    pip3 install huggingface_hub --break-system-packages && \
+    pip3 install huggingface_hub && \
     rm -rf /var/lib/apt/lists/*
 
 RUN wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh && \
