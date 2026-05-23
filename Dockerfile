@@ -47,7 +47,7 @@ RUN chmod +x ./run.sh && chown -R 1000:0 /app && mkdir -p /app/cache && chown -R
 USER 1000
 
 ENV ACCEPT_EULA=Y
-ENV REPO_ID="MohamedAlmansoury/pharmacore-backup"
+ENV REPO_ID="Mnsory/pharmacore-backup"
 ENV MSSQL_MEMORY_LIMIT_MB=256
 ENV MIGRATE_ONLY=false
 ENV XDG_CACHE_HOME=/app/cache
