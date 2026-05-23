@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-/opt/mssql/bin/sqlservr &
+MSSQL_MEMORY_LIMIT_MB=256 /opt/mssql/bin/sqlservr &
 MSSQL_PID=$!
 
 echo "Waiting for SQL Server to be ready..."
