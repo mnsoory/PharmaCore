@@ -64,7 +64,7 @@ fi
 configure_sql
 
 BACKUP_URL="https://huggingface.co/datasets/${REPO_ID}/resolve/main/PharmaCoreDb.bak"
-HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+HTTP_STATUS=$(curl -s -L -o /dev/null -w "%{http_code}" \
     -H "Authorization: Bearer ${HF_TOKEN}" "$BACKUP_URL")
 
 if [ "$HTTP_STATUS" -eq 200 ]; then
