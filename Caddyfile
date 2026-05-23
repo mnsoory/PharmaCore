@@ -1,7 +1,4 @@
 :7860 {
-    root * /app/frontend
-    file_server
-    
     header {
         Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
         X-Frame-Options           "SAMEORIGIN"
@@ -18,6 +15,7 @@
             header_up  X-Real-IP         {remote_host}
             header_up  X-Forwarded-For   {remote_host}
             header_up  X-Forwarded-Proto {scheme}
+            
             transport http {
                 dial_timeout            10s
                 response_header_timeout 60s
@@ -25,5 +23,15 @@
         }
     }
 
-    try_files {path} /index.html
+    handle {
+        root * /app/frontend
+        try_files {path} /index.html
+        file_server
+    }
+
+    log {
+        output stdout
+        format  json
+        level   INFO
+    }
 }
