@@ -42,7 +42,7 @@ COPY --from=frontend-build /app/dist ./frontend
 COPY --from=backend-build /app/publish ./backend
 COPY Caddyfile ./Caddyfile
 COPY run.sh ./run.sh
-RUN chmod +x ./run.sh && chown -R 1000:0 /app
+RUN chmod +x ./run.sh && chown -R 1000:0 /app && mkdir -p /app/cache && chown -R 1000:0 /app/cache
 
 USER 1000
 
@@ -50,6 +50,8 @@ ENV ACCEPT_EULA=Y
 ENV REPO_ID="MohamedAlmansoury/pharmacore-backup"
 ENV MSSQL_MEMORY_LIMIT_MB=1024
 ENV MIGRATE_ONLY=false
+ENV XDG_CACHE_HOME=/app/cache
+ENV HF_HOME=/app/cache/huggingface
 
 EXPOSE 7860
 
