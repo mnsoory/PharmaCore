@@ -1,12 +1,19 @@
 #!/bin/bash
 
-/opt/mssql/bin/sqlservr &
+/opt/mssql/bin/sqlservr --force-flush=1 &
 
 echo "Waiting for SQL Server..."
 until /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "SELECT 1" &>/dev/null
 do
     sleep 2
 done
+
+echo "Disabling SQL CLR to save memory..."
+/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "
+EXEC sp_configure 'show advanced options', 1;
+RECONFIGURE;
+EXEC sp_configure 'clr enabled', 0;
+RECONFIGURE;"
 
 BACKUP_URL="https://huggingface.co/datasets/${REPO_ID}/resolve/main/PharmaCoreDb.bak"
 HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${HF_TOKEN}" "$BACKUP_URL")
