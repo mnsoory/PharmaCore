@@ -14,6 +14,29 @@ for i in $(seq 1 30); do
     sleep 3
 done
 
+upload_to_hf() {
+    if [ -z "$HF_TOKEN" ]; then
+        echo "WARNING: HF_TOKEN is not set. Skipping upload."
+        return 1
+    fi
+    if [ ! -f "/app/backend/PharmaCoreDb.bak" ]; then
+        echo "WARNING: Backup file not found. Skipping upload."
+        return 1
+    fi
+    python3 -c "
+from huggingface_hub import HfApi
+import os
+api = HfApi(token=os.environ['HF_TOKEN'])
+api.upload_file(
+    path_or_fileobj='/app/backend/PharmaCoreDb.bak',
+    path_in_repo='PharmaCoreDb.bak',
+    repo_id=os.environ['REPO_ID'],
+    repo_type='dataset'
+)
+print('Upload complete.')
+"
+}
+
 if [ "$MIGRATE_ONLY" = "true" ]; then
     /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "
         EXEC sp_configure 'show advanced options', 1; RECONFIGURE;
@@ -27,18 +50,7 @@ if [ "$MIGRATE_ONLY" = "true" ]; then
         TO DISK = '/app/backend/PharmaCoreDb.bak'
         WITH FORMAT, INIT;"
 
-    if [ -f "/app/backend/PharmaCoreDb.bak" ]; then
-        python3 -c "
-from huggingface_hub import HfApi
-api = HfApi(token='$HF_TOKEN')
-api.upload_file(
-    path_or_fileobj='/app/backend/PharmaCoreDb.bak',
-    path_in_repo='PharmaCoreDb.bak',
-    repo_id='$REPO_ID',
-    repo_type='dataset'
-)
-"
-    fi
+    upload_to_hf
 
     kill $MSSQL_PID
     exit 0
@@ -78,16 +90,5 @@ while true; do
         TO DISK = '/app/backend/PharmaCoreDb.bak'
         WITH FORMAT, INIT;" || true
 
-    if [ -f "/app/backend/PharmaCoreDb.bak" ]; then
-        python3 -c "
-from huggingface_hub import HfApi
-api = HfApi(token='$HF_TOKEN')
-api.upload_file(
-    path_or_fileobj='/app/backend/PharmaCoreDb.bak',
-    path_in_repo='PharmaCoreDb.bak',
-    repo_id='$REPO_ID',
-    repo_type='dataset'
-)
-" || true
-    fi
+    upload_to_hf || true
 done
