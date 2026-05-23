@@ -14,6 +14,13 @@ for i in $(seq 1 30); do
     sleep 3
 done
 
+configure_sql() {
+    /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "
+        EXEC sp_configure 'show advanced options', 1; RECONFIGURE;
+        EXEC sp_configure 'max server memory (MB)', 512; RECONFIGURE;
+        EXEC sp_configure 'clr enabled', 0; RECONFIGURE;"
+}
+
 upload_to_hf() {
     if [ -z "$HF_TOKEN" ]; then
         echo "WARNING: HF_TOKEN is not set. Skipping upload."
@@ -38,9 +45,7 @@ print('Upload complete.')
 }
 
 if [ "$MIGRATE_ONLY" = "true" ]; then
-    /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "
-        EXEC sp_configure 'show advanced options', 1; RECONFIGURE;
-        EXEC sp_configure 'clr enabled', 0; RECONFIGURE;"
+    configure_sql
 
     cd /app/backend
     MIGRATE_ONLY=true dotnet PharmaCore.API.dll
@@ -55,6 +60,8 @@ if [ "$MIGRATE_ONLY" = "true" ]; then
     kill $MSSQL_PID
     exit 0
 fi
+
+configure_sql
 
 BACKUP_URL="https://huggingface.co/datasets/${REPO_ID}/resolve/main/PharmaCoreDb.bak"
 HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
@@ -73,10 +80,6 @@ if [ "$HTTP_STATUS" -eq 200 ]; then
 else
     echo "No remote backup found. Starting with empty database."
 fi
-
-/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "
-    EXEC sp_configure 'show advanced options', 1; RECONFIGURE;
-    EXEC sp_configure 'clr enabled', 0; RECONFIGURE;" || true
 
 cd /app/backend && dotnet PharmaCore.API.dll --urls "http://localhost:8080" &
 
