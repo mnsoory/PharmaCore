@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y curl gnupg debian-keyring debian-archiv
     rm -rf /var/lib/apt/lists/*
 RUN wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh && \
     chmod +x dotnet-install.sh && \
-    ./dotnet-install.sh --runtime aspnetcore --version 9.0 --install-dir /usr/share/dotnet && \
+    ./dotnet-install.sh --runtime aspnetcore --version 9.0.5 --install-dir /usr/share/dotnet && \
     ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet && \
     rm dotnet-install.sh
 
