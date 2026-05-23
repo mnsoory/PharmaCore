@@ -43,6 +43,7 @@ USER 1000
 ENV ACCEPT_EULA=Y
 ENV ConnectionStrings__DefaultConnection="Server=127.0.0.1;Database=PharmaCoreDb;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;"
 ENV REPO_ID="MohamedAlmansoury/pharmacore-backup"
+ENV MSSQL_MEMORY_LIMIT_MB=1024
 
 EXPOSE 7860
 CMD ["./run.sh"]
