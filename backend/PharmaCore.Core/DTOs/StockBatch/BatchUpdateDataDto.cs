@@ -16,6 +16,9 @@ namespace PharmaCore.Core.DTOs.StockBatch
         [Required(ErrorMessage = "Quantity is required")]
         public int Quantity { get; set; }
 
+        [Required(ErrorMessage = "Received quantity is required")]
+        public int ReceivedQty { get; set; }
+
         [Required(ErrorMessage = "Expiry date is required")]
         [DataType(DataType.Date)]
         public DateTime ExpiryDate { get; set; }

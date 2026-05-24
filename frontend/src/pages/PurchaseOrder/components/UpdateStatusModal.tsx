@@ -196,11 +196,11 @@ const UpdateStatusModal: React.FC<Props> = ({
                           type="number"
                           required
                           min={1}
-                          value={itemsData[index].quantity - (itemsData[index].receivedQty ?? 0)}
+                          value={itemsData[index].receivedQty}
                           onChange={(e) =>
                             updateItem(
                               index,
-                              "quantity",
+                              "receivedQty",
                               Number(e.target.value),
                             )
                           }

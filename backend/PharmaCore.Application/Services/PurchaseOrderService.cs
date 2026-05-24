@@ -129,7 +129,7 @@ namespace PharmaCore.Application.Services
                     SupplierId = order.SupplierId,
                     PurchaseOrderId = order.PurchaseOrderId,
                     PurchaseOrderItemId = item.PurchaseOrderItemId,
-                    Quantity = batchData.Quantity,
+                    Quantity = batchData.ReceivedQty,
                     PurchasePrice = item.UnitPrice,
                     BatchNumber = batchData.BatchNumber,
                     ExpiryDate = batchData.ExpiryDate,
@@ -162,7 +162,7 @@ namespace PharmaCore.Application.Services
                     continue;
                 }
 
-                var totalReceivedInThisRequest = itemBatches.Sum(x => x.Quantity);
+                var totalReceivedInThisRequest = itemBatches.Sum(x => x.ReceivedQty);
 
                 ValidateItemQuantity(item, totalReceivedInThisRequest, requestedStatus);
 

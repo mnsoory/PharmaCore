@@ -90,6 +90,7 @@ const PurchaseOrdersPage = () => {
     payload: StatusUpdatePayload,
   ) => {
     setIsUpdating(true);
+    console.log("q:", payload.itemsData[0].receivedQty)
     try {
       await purchaseOrderService.updateStatus(id, payload);
       toast.success(`Order #${id} status updated to ${payload.newStatus}`);
