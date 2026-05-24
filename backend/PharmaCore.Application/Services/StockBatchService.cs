@@ -103,10 +103,15 @@ namespace PharmaCore.Application.Services
         public async Task<IEnumerable<LowStockDrugDto>> GetLowStockDrugsAsync()
         {
             var query = _uow.Drugs.GetQueryable()
-                .ProjectTo<LowStockDrugDto>(_mapper.ConfigurationProvider)
-                .Where(x => x.CurrentStock <= x.MinimumStockThreshold);
+                .Where(d =>
+                    (d.StockBatches.Sum(sb => (int?)sb.RemainingQty) ?? 0)
+                    <=
+                    (d.StockSetting == null ? 0 : d.StockSetting.MinimumStock)
+                )
+                .ProjectTo<LowStockDrugDto>(_mapper.ConfigurationProvider);
 
-            return await Task.Run(() => query.ToList());
+                    return await Task.Run(() => query.ToList());
         }
+    
     }
 }

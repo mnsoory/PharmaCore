@@ -2,6 +2,7 @@
 
 using AutoMapper;
 using PharmaCore.Core.DTOs.Drug;
+using PharmaCore.Core.DTOs.StockBatch;
 using PharmaCore.Core.Entities;
 
 namespace PharmaCore.Application.Mappings
@@ -23,6 +24,13 @@ namespace PharmaCore.Application.Mappings
             CreateMap<Drug, TopSellingDrugDto>()
                 .ForMember(dest => dest.TotalSoldQuantity, opt => opt.MapFrom(src => src.StockBatches.Sum(s => s.SaleItems.Sum(si => si.Quantity))))
                 .ForMember(dest => dest.CurrentStockQuantity, opt => opt.MapFrom(src => src.StockBatches.Sum(s => s.Quantity)));
+
+            CreateMap<Drug, LowStockDrugDto>()
+                .ForMember(dest => dest.CurrentStock,
+                    opt => opt.MapFrom(src => (int?)src.StockBatches.Sum(sb => sb.RemainingQty) ?? 0))
+                .ForMember(dest => dest.MinimumStockThreshold,
+                    opt => opt.MapFrom(src => src.StockSetting == null ? 0 : src.StockSetting.MinimumStock));
+        
         }
     }
 }
