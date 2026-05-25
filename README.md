@@ -140,7 +140,7 @@ cp .env.example .env
 docker-compose up -d
 ```
 
-Access at: http://localhost:7860
+Access at: https://mnsory-pharmacore.hf.space/
 
 ### **Option 2: Local Development**
 
