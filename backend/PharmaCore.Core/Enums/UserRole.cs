@@ -6,6 +6,7 @@ namespace PharmaCore.Core.Enums
     {
         Admin = 1,
         Pharmacist = 2,
-        Assistant = 3
+        Assistant = 3,
+        Tester = 4,
     }
 }

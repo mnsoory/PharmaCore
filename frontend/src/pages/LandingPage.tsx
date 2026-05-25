@@ -29,14 +29,14 @@ const LandingPage: React.FC = () => {
         <AppLogo />
         <div className="flex items-center gap-5 text-sm text-muted-foreground">
           <a
-            href="/docs"
+            href="#"
             className="flex items-center gap-1.5 transition-colors hover:text-foreground"
           >
             <HelpCircle className="h-4 w-4" />
             Support
           </a>
           <a
-            href="mailto:admin@pharmacore.com"
+            href="#"
             className="flex items-center gap-1.5 transition-colors hover:text-foreground"
           >
             <Mail className="h-4 w-4" />

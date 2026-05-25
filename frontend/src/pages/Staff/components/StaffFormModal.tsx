@@ -7,7 +7,7 @@ import type {
   UserRole,
 } from "../../../types/user";
 
-const roles: UserRole[] = ["Assistant", "Pharmacist", "Admin"];
+const roles: UserRole[] = ["Assistant", "Pharmacist", "Admin", "Tester"];
 
 interface Props {
   user?: UserType;

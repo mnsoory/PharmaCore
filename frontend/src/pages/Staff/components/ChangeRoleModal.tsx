@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { X, ShieldHalf } from "lucide-react";
 import type { User, UserRole, UpdateRolePayload } from "../../../types/user";
 
-const roles: UserRole[] = ["Assistant", "Pharmacist", "Admin"];
+const roles: UserRole[] = ["Assistant", "Pharmacist", "Admin", "Tester"];
 
 const roleDescriptions: Record<UserRole, string> = {
   Pharmacist: "Can process sales, view inventory, and manage stock",
   // Manager: "All pharmacist permissions plus reports and supplier management",
   Admin: "Full system access including user management",
   Assistant: "Can view inventory and assist with sales processing",
+  Tester: "Demo account for testing the core sales flow and exploring system features",
 };
 
 interface Props {
