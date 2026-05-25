@@ -5,7 +5,6 @@ import SalesOverviewTab from "./components/SalesOverviewTab";
 import SalesTable from "./components/SalesTable";
 import SaleDetailsModal from "./components/SaleDetailsModal";
 import NewSaleModal from "./components/NewSaleModal";
-import axios from "axios";
 import { saleService } from "@/services/saleService";
 import type { Sale, SalesTab, CreateSalePayload } from "@/types/sale";
 import { saleKeys } from "@/api/keys";
@@ -15,6 +14,7 @@ import LoadingScreen from "@/components/ui/LoadingScreen";
 import ErrorScreen from "@/components/ui/ErrorScreen";
 import { checkLowStock } from "@/hooks/useNotificationChecker";
 import { useNotificationStore } from "@/store/useNotificationStore";
+import { handleApiError } from "@/utils/errorHandler";
 
 const tabs: { id: SalesTab; label: string }[] = [
   { id: "overview", label: "Overview" },
@@ -92,21 +92,7 @@ const SalesPage = () => {
       checkLowStock(addNotifications, settings.lowStock);
       queryClient.invalidateQueries({ queryKey: saleKeys.all });
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const serverMessage =
-          err.response?.data?.Message || err.response?.data?.message;
-        if (serverMessage) {
-          toast.error(serverMessage);
-        } else if (err.response?.status === 400) {
-          toast.error("Invalid order data. Please check your inputs.");
-        } else if (err.code === "ERR_NETWORK") {
-          toast.error("Connection failed. Please check your network.");
-        } else {
-          toast.error(
-            `Unexpected error (${err.response?.status ?? "Unknown"})`,
-          );
-        }
-      }
+      handleApiError(err);
     } finally {
       setIsCreating(false);
     }

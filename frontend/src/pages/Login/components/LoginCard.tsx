@@ -5,6 +5,7 @@ import { authService } from "../../../services/authService";
 import { useAuthStore } from "../../../store/useAuthStore";
 import { Lock, Eye, EyeOff, User, CheckCircle2 } from "lucide-react";
 import AppLogo from "../../../components/ui/AppLogo";
+import { toast } from "sonner";
 
 const LoginCard: React.FC = () => {
   const navigate = useNavigate();
@@ -55,6 +56,9 @@ const LoginCard: React.FC = () => {
         } else {
           setError("Login failed. Please try again.");
         }
+      } else {
+        console.error("Non-Axios Unexpected Error:", err);
+        toast.error("An unexpected application error occurred.");
       }
     } finally {
       setIsLoading(false);

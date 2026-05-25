@@ -92,7 +92,9 @@ const SupplierPage = () => {
     setIsToggling(true);
     try {
       await supplierService.toggleStatus(supplier.supplierId);
-      toast.success(`Supplier #${supplier.supplierId} ${supplier.isActive ? "deactivated" : "activated"} successfully`);
+      toast.success(
+        `Supplier #${supplier.supplierId} ${supplier.isActive ? "deactivated" : "activated"} successfully`,
+      );
       setShowModal(false);
       queryClient.invalidateQueries({ queryKey: supplierKeys.lists() });
     } catch (err) {

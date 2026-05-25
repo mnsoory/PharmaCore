@@ -10,7 +10,6 @@ import { inventoryService } from "@/services/inventoryService";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 import { drugKeys } from "@/api/keys";
-import axios from "axios";
 import { toast } from "sonner";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import ErrorScreen from "@/components/ui/ErrorScreen";
@@ -19,6 +18,7 @@ import DrugDetailsModal from "./components/DrugDetailsModal";
 import { useSearchParams } from "react-router-dom";
 import { checkLowStock } from "@/hooks/useNotificationChecker";
 import { useNotificationStore } from "@/store/useNotificationStore";
+import { handleApiError } from "@/utils/errorHandler";
 
 const InventoryPage = () => {
   const {
@@ -90,9 +90,7 @@ const InventoryPage = () => {
       setIsSettingsOnlyUpdate(false);
       queryClient.invalidateQueries({ queryKey: drugKeys.lists() });
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        toast.error(err.response?.data?.Message ?? "Failed to update drug");
-      }
+      handleApiError(err);
     } finally {
       setIsEditing(false);
     }
@@ -106,9 +104,7 @@ const InventoryPage = () => {
       setDetailDrug(null);
       queryClient.invalidateQueries({ queryKey: drugKeys.lists() });
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        toast.error(err.response?.data?.Message ?? "Failed to delete drug");
-      }
+      handleApiError(err);
     } finally {
       setIsDeleting(false);
     }
@@ -125,24 +121,7 @@ const InventoryPage = () => {
         queryClient.invalidateQueries({ queryKey: drugKeys.lists() });
       }
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        const serverMessage =
-          err.response?.data?.Message || err.response?.data?.message;
-
-        if (serverMessage) {
-          toast.error(serverMessage);
-        } else if (err.code === "ERR_NETWORK") {
-          toast.error(
-            "Unable to connect to server. Please check your connection.",
-          );
-        } else {
-          toast.error(
-            `Unexpected error (${err.response?.status || "Unknown"})`,
-          );
-        }
-      } else {
-        toast.error("A client-side error occurred.");
-      }
+      handleApiError(err);
     } finally {
       setIsSaving(false);
     }
@@ -157,39 +136,41 @@ const InventoryPage = () => {
   };
 
   const filtered = useMemo(() => {
-  if (!drugs) return [];
+    if (!drugs) return [];
 
-  const searchWords = search
-    .toLowerCase()
-    .split(/\s+/)
-    .filter((word) => word.trim() !== "");
+    const searchWords = search
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((word) => word.trim() !== "");
 
-  let result = drugs.filter((d) => {
-    const matchesSearch = searchWords.every((word) => {
-      return (
-        d.tradeName.toLowerCase().includes(word) ||
-        d.genericName.toLowerCase().includes(word) ||
-        d.concentration.toLowerCase().includes(word)
-      );
+    let result = drugs.filter((d) => {
+      const matchesSearch = searchWords.every((word) => {
+        return (
+          d.tradeName.toLowerCase().includes(word) ||
+          d.genericName.toLowerCase().includes(word) ||
+          d.concentration.toLowerCase().includes(word)
+        );
+      });
+
+      const matchesCategory = categoryFilter
+        ? d.category === categoryFilter
+        : true;
+      const matchesStatus = statusFilter ? d.status === statusFilter : true;
+
+      return matchesSearch && matchesCategory && matchesStatus;
     });
 
-    const matchesCategory = categoryFilter ? d.category === categoryFilter : true;
-    const matchesStatus = statusFilter ? d.status === statusFilter : true;
+    if (sortField) {
+      result = [...result].sort((a, b) => {
+        const av = a[sortField],
+          bv = b[sortField];
+        if (av === bv) return 0;
+        return (av < bv ? -1 : 1) * (sortDir === "asc" ? 1 : -1);
+      });
+    }
 
-    return matchesSearch && matchesCategory && matchesStatus;
-  });
-
-  if (sortField) {
-    result = [...result].sort((a, b) => {
-      const av = a[sortField],
-        bv = b[sortField];
-      if (av === bv) return 0;
-      return (av < bv ? -1 : 1) * (sortDir === "asc" ? 1 : -1);
-    });
-  }
-
-  return result;
-}, [drugs, search, categoryFilter, statusFilter, sortField, sortDir]);
+    return result;
+  }, [drugs, search, categoryFilter, statusFilter, sortField, sortDir]);
 
   const stats = useMemo(() => {
     if (!drugs) {
@@ -204,7 +185,7 @@ const InventoryPage = () => {
       totalDrugs: drugs.length,
       lowStock: drugs.filter((d) => d.status === "Low Stock").length,
       outOfStock: drugs.filter((d) => d.status === "Out of Stock").length,
-      safeStock: drugs.filter((d) => d.status === "Safe").length
+      safeStock: drugs.filter((d) => d.status === "Safe").length,
     };
   }, [drugs]);
 

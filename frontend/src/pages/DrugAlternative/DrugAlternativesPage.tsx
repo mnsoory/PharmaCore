@@ -8,9 +8,11 @@ import { drugAlternativeService } from "@/services/drugAlternativeService";
 import { toast } from "sonner";
 
 const DrugAlternativesPage: React.FC = () => {
-  const [selectedDrug, setSelectedDrug] = useState<DrugWithAlternatives | null>(null);
-  const [loading,    setLoading]    = useState(false);
-  const [isAdding,   setIsAdding]   = useState(false);
+  const [selectedDrug, setSelectedDrug] = useState<DrugWithAlternatives | null>(
+    null,
+  );
+  const [loading, setLoading] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleSelectDrug = async (drug: {
@@ -26,18 +28,21 @@ const DrugAlternativesPage: React.FC = () => {
       setSelectedDrug(data);
     } catch {
       setSelectedDrug({
-        drugId:        drug.drugId,
-        tradeName:     drug.tradeName,
-        genericName:   drug.genericName,
+        drugId: drug.drugId,
+        tradeName: drug.tradeName,
+        genericName: drug.genericName,
         concentration: drug.concentration ?? "",
-        alternatives:  [],
+        alternatives: [],
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAddAlternative = async (drugId: number, alternativeDrugId: number) => {
+  const handleAddAlternative = async (
+    drugId: number,
+    alternativeDrugId: number,
+  ) => {
     setIsAdding(true);
     try {
       await drugAlternativeService.create({ drugId, alternativeDrugId });
@@ -51,16 +56,23 @@ const DrugAlternativesPage: React.FC = () => {
     }
   };
 
-  const handleDeleteAlternative = async (drugId: number, alternativeId: number) => {
+  const handleDeleteAlternative = async (
+    drugId: number,
+    alternativeId: number,
+  ) => {
     setIsDeleting(true);
     try {
       await drugAlternativeService.delete(drugId, alternativeId);
       toast.success("Alternative removed successfully");
-      setSelectedDrug(prev =>
-        prev ? {
-          ...prev,
-          alternatives: prev.alternatives.filter(a => a.id !== alternativeId),
-        } : prev
+      setSelectedDrug((prev) =>
+        prev
+          ? {
+              ...prev,
+              alternatives: prev.alternatives.filter(
+                (a) => a.id !== alternativeId,
+              ),
+            }
+          : prev,
       );
     } catch (err) {
       handleApiError(err);
@@ -82,7 +94,9 @@ const DrugAlternativesPage: React.FC = () => {
       <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
         <div className="h-1 w-full bg-linear-to-r from-sidebar-primary/60 via-sidebar-primary to-sidebar-primary/60" />
         <div className="px-6 py-5">
-          <p className="text-sm font-medium text-foreground mb-3">Search Drug</p>
+          <p className="text-sm font-medium text-foreground mb-3">
+            Search Drug
+          </p>
           <DrugSearchInput
             placeholder="Search by trade name or generic name..."
             onSelect={handleSelectDrug}
@@ -98,7 +112,9 @@ const DrugAlternativesPage: React.FC = () => {
               <div className="absolute inset-0 rounded-full border-2 border-sidebar-primary/20" />
               <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-sidebar-primary animate-spin" />
             </div>
-            <p className="text-sm text-muted-foreground">Loading alternatives...</p>
+            <p className="text-sm text-muted-foreground">
+              Loading alternatives...
+            </p>
           </div>
         </div>
       )}
@@ -109,9 +125,12 @@ const DrugAlternativesPage: React.FC = () => {
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted/50">
             <ArrowLeftRight className="h-6 w-6 text-muted-foreground/50" />
           </div>
-          <p className="text-base font-medium text-muted-foreground">No drug selected</p>
+          <p className="text-base font-medium text-muted-foreground">
+            No drug selected
+          </p>
           <p className="text-sm text-muted-foreground/60 max-w-xs text-center">
-            Search for a drug above to view and manage its therapeutic alternatives
+            Search for a drug above to view and manage its therapeutic
+            alternatives
           </p>
         </div>
       )}

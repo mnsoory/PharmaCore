@@ -5,7 +5,6 @@ import StockBatchToolbar from "./components/StockBatchToolbar";
 import StockBatchTable from "./components/StockBatchTable";
 import StockAdjustmentModal from "./components/StockAdjustmentModal";
 import { stockBatchKeys } from "@/api/keys";
-import axios from "axios";
 import { stockBatchService } from "@/services/stockBatchService";
 import { stockAdjustmentService } from "@/services/stockAdjustmentService";
 import { useQuery } from "@tanstack/react-query";
@@ -21,6 +20,7 @@ import type {
   StockAdjustmentPayload,
   BatchFilter,
 } from "@/types/stockBatch";
+import { handleApiError } from "@/utils/errorHandler";
 
 const StockBatchesPage = () => {
   const {
@@ -83,31 +83,16 @@ const StockBatchesPage = () => {
         },
       );
       setSelectedBatch(null);
-      const isAddition = [
-        "addition",
-        "returnFromCustomer",
-      ].includes(adjustment.adjustmentType);
+      const isAddition = ["addition", "returnFromCustomer"].includes(
+        adjustment.adjustmentType,
+      );
       if (!isAddition) checkLowStock(addNotifications, settings.lowStock);
       queryClient.invalidateQueries({ queryKey: stockBatchKeys.lists() });
       queryClient.invalidateQueries({
         queryKey: stockBatchKeys.detail(adjustment.stockBatchId),
       });
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const serverMessage =
-          err.response?.data?.Message || err.response?.data?.message;
-        if (serverMessage) {
-          toast.error(serverMessage);
-        } else if (err.response?.status === 400) {
-          toast.error("Invalid order data. Please check your inputs.");
-        } else if (err.code === "ERR_NETWORK") {
-          toast.error("Connection failed. Please check your network.");
-        } else {
-          toast.error(
-            `Unexpected error (${err.response?.status ?? "Unknown"})`,
-          );
-        }
-      }
+      handleApiError(err);
     } finally {
       setIsCreating(false);
     }

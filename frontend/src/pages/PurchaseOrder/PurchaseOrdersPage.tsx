@@ -9,7 +9,6 @@ import CreateOrderModal from "./components/CreateOrderModal";
 import { purchaseOrderService } from "@/services/purchaseOrderService";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { purchaseOrderKeys } from "@/api/keys";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import ErrorScreen from "@/components/ui/ErrorScreen";
@@ -20,6 +19,7 @@ import type {
   CreateOrderPayload,
   StatusUpdatePayload,
 } from "@/types/purchaseOrder";
+import { handleApiError } from "@/utils/errorHandler";
 
 const PurchaseOrdersPage = () => {
   const {
@@ -65,21 +65,7 @@ const PurchaseOrdersPage = () => {
       setShowCreateModal(false);
       queryClient.invalidateQueries({ queryKey: purchaseOrderKeys.lists() });
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const serverMessage =
-          err.response?.data?.Message || err.response?.data?.message;
-        if (serverMessage) {
-          toast.error(serverMessage);
-        } else if (err.response?.status === 400) {
-          toast.error("Invalid order data. Please check your inputs.");
-        } else if (err.code === "ERR_NETWORK") {
-          toast.error("Connection failed. Please check your network.");
-        } else {
-          toast.error(
-            `Unexpected error (${err.response?.status ?? "Unknown"})`,
-          );
-        }
-      }
+      handleApiError(err);
     } finally {
       setIsCreating(false);
     }
@@ -90,18 +76,14 @@ const PurchaseOrdersPage = () => {
     payload: StatusUpdatePayload,
   ) => {
     setIsUpdating(true);
-    console.log("q:", payload.itemsData[0].receivedQty)
+    console.log("q:", payload.itemsData[0].receivedQty);
     try {
       await purchaseOrderService.updateStatus(id, payload);
       toast.success(`Order #${id} status updated to ${payload.newStatus}`);
       setUpdateOrder(null);
       queryClient.invalidateQueries({ queryKey: purchaseOrderKeys.lists() });
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const serverMessage =
-          err.response?.data?.Message || err.response?.data?.message;
-        toast.error(serverMessage ?? "Failed to update order status");
-      }
+      handleApiError(err);
     } finally {
       setIsUpdating(false);
     }
