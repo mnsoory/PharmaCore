@@ -48,7 +48,7 @@ namespace PharmaCore.API.Controllers
         }
 
         [HttpGet("user/{userId}")]
-        [Authorize(Roles = "Admin,Manager")]
+        //[Authorize(Roles = "Admin,Manager")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         //[ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<IEnumerable<SaleResponseDto>>> GetByUserId(int userId)
@@ -57,7 +57,7 @@ namespace PharmaCore.API.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "Admin,Manager")]
+        //[Authorize(Roles = "Admin,Manager")]
         [HttpGet("all")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<SaleResponseDto>>> GetAll()
