@@ -113,14 +113,16 @@ namespace PharmaCore.Infrastructure.Repositories
 
         public async Task<IEnumerable<StockBatch>> GetAllExpiringSoonAsync(int maxDays)
         {
-            var thresholdDate = DateTime.UtcNow.AddDays(maxDays);
+            var now = DateTime.UtcNow;
+            var thresholdDate = now.AddDays(maxDays);
+
             return await _context.StockBatches
                 .AsNoTracking()
                 .Include(s => s.Drug)
                     .ThenInclude(d => d.StockSetting)
                 .Include(b => b.Supplier)
                 .Where(b => b.ExpiryDate <= thresholdDate
-                         && b.ExpiryDate > DateTime.UtcNow
+                         && b.ExpiryDate > now
                          && b.Quantity > 0)
                 .OrderBy(b => b.ExpiryDate)
                 .ToListAsync();
