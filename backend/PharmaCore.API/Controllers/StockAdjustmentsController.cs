@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PharmaCore.Core.DTOs.StockAdjustment;
 using PharmaCore.Core.Interfaces.Services;
-using System.Security.Claims;
 
 namespace PharmaCore.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class StockAdjustmentsController : ControllerBase
     {
         private readonly IStockAdjustmentService _adjustmentService;
@@ -17,6 +18,7 @@ namespace PharmaCore.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<StockAdjustmentResponseDto>> Create(CreateStockAdjustmentDto dto)

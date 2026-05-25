@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PharmaCore.Core.DTOs.Sale;
 using PharmaCore.Core.DTOs.SaleCancellation;
@@ -8,6 +9,7 @@ namespace PharmaCore.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class SaleCancellationsController : ControllerBase
     {
         private readonly ISaleCancellationService _cancellationService;
@@ -18,6 +20,7 @@ namespace PharmaCore.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager,Pharmacist")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<SaleCancellationResponseDto>> Create([FromBody] CreateSaleCancellationDto dto)

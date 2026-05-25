@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PharmaCore.Application.Services;
 using PharmaCore.Core.DTOs.PurchaseOrder;
@@ -9,6 +10,7 @@ namespace PharmaCore.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class PurchaseOrdersController : ControllerBase
     {
         private readonly IPurchaseOrderService _orderService;
@@ -33,6 +35,7 @@ namespace PharmaCore.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<PurchaseOrderResponseDto>> Create([FromBody] CreatePurchaseOrderDto createDto)
@@ -43,6 +46,7 @@ namespace PharmaCore.API.Controllers
         }
 
         [HttpPatch("{id}/status")]
+        [Authorize(Roles = "Admin,Manager")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> UpdateStatus(int id, [FromBody] PurchaseOrderUpdateStatusDto updateStatusDto)

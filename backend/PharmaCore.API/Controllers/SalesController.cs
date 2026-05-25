@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using PharmaCore.Core.DTOs.Sale;
 using PharmaCore.Core.Interfaces.Services;
 
 namespace PharmaCore.API.Controllers
 {
-    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class SalesController : ControllerBase
     {
         private readonly ISaleService _saleService;
@@ -19,6 +20,7 @@ namespace PharmaCore.API.Controllers
         }
 
         [HttpPost]
+        [EnableRateLimiting("GlobalPolicy")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         //[ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -45,8 +47,8 @@ namespace PharmaCore.API.Controllers
             return Ok(result);
         }
 
-        //[Authorize(Roles = "Admin")]
         [HttpGet("user/{userId}")]
+        [Authorize(Roles = "Admin,Manager")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         //[ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<IEnumerable<SaleResponseDto>>> GetByUserId(int userId)
@@ -55,7 +57,7 @@ namespace PharmaCore.API.Controllers
             return Ok(result);
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Manager")]
         [HttpGet("all")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<SaleResponseDto>>> GetAll()

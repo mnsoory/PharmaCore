@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PharmaCore.Core.DTOs.DrugAlternative;
 using PharmaCore.Core.Interfaces.Services;
 
@@ -6,6 +7,7 @@ namespace PharmaCore.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class DrugAlternativesController : ControllerBase
     {
         private readonly IDrugAlternativeService _drugAlternativeService;
@@ -25,6 +27,7 @@ namespace PharmaCore.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager,Pharmacist")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> AddAlternative([FromBody] CreateDrugAlternativeDto dto)
@@ -34,6 +37,7 @@ namespace PharmaCore.Api.Controllers
         }
 
         [HttpDelete("{id1}/{id2}")]
+        [Authorize(Roles = "Admin,Manager,Pharmacist")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> RemoveAlternative(int id1, int id2)

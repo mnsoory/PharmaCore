@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PharmaCore.Core.DTOs.StockSetting;
 using PharmaCore.Core.Interfaces.Services;
 
@@ -6,6 +7,7 @@ namespace PharmaCore.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class StockSettingsController : ControllerBase
     {
         private readonly IStockSettingService _stockSettingService;
@@ -33,6 +35,7 @@ namespace PharmaCore.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> Upsert(StockSettingUpsertDto dto)
@@ -42,6 +45,7 @@ namespace PharmaCore.Api.Controllers
         }
 
         [HttpDelete("{drugId}")]
+        [Authorize(Roles = "Admin,Manager")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> Delete(int drugId)

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PharmaCore.Core.DTOs.StockBatch;
 using PharmaCore.Core.Interfaces.Services;
 
@@ -6,6 +7,7 @@ namespace PharmaCore.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class StockBatchesController : ControllerBase
     {
         private readonly IStockBatchService _stockBatchService;

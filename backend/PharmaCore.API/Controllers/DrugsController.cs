@@ -44,6 +44,7 @@ namespace PharmaCore.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager,Pharmacist")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<DrugResponseDto>> Create([FromBody] CreateDrugDto createDto)
@@ -55,6 +56,7 @@ namespace PharmaCore.API.Controllers
         [HttpPut("{id:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Roles = "Admin,Manager,Pharmacist")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateDrugDto updateDto)
         {
             await _drugService.UpdateAsync(id, updateDto);
@@ -64,7 +66,7 @@ namespace PharmaCore.API.Controllers
         [HttpDelete("{id:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(Roles = "Admin,Pharmacist")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> Delete(int id)
         {
             await _drugService.DeleteAsync(id);
