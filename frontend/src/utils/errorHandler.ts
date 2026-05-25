@@ -19,6 +19,12 @@ export const handleApiError = (err: unknown) => {
       toast.error(serverMessage);
     } else if (err.response?.status === 400) {
       toast.error("Invalid data. Please check your inputs.");
+    } else if (err.response?.status === 401) {
+      toast.error("Your session has expired. Please login again.");
+    } else if (err.response?.status === 403) {
+      toast.error(
+        "Access denied. You don't have permission to perform this action.",
+      );
     } else if (err.code === "ERR_NETWORK") {
       toast.error("Connection failed. Please check your network.");
     } else {
