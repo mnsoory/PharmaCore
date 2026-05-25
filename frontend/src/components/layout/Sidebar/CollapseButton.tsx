@@ -1,5 +1,4 @@
 import React from "react";
-import { createPortal } from "react-dom";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -8,53 +7,26 @@ interface Props {
   onClick?: () => void;
 }
 
-const CollapseButton: React.FC<Props> = ({
-  collapsed,
-  onClick,
-}) => {
-  if (typeof document === "undefined") {
-    return null;
-  }
-
-  return createPortal(
-    <button
-      aria-label="Collapse sidebar"
-      onClick={onClick}
+const CollapseButton: React.FC<Props> = ({ collapsed, onClick }) => (
+  <button
+    aria-label="Collapse sidebar"
+    onClick={onClick}
+    className={cn(
+      "absolute -right-4 top-20 z-40",
+      "flex h-6 w-6 items-center justify-center",
+      "rounded-full border border-sidebar-border",
+      "bg-sidebar text-sidebar-foreground/60 shadow-md",
+      "transition-all hover:bg-sidebar-accent hover:text-sidebar-foreground",
+    )}
+  >
+    <ChevronLeft
       className={cn(
-        `
-        fixed
-        top-20
-        z-9999
-        flex
-        h-7
-        w-7
-        items-center
-        justify-center
-        rounded-full
-        border
-        border-sidebar-border
-        bg-sidebar
-        text-sidebar-foreground/60
-        shadow-md
-        transition-all
-        hover:bg-sidebar-accent
-        hover:text-sidebar-foreground
-      `,
-        collapsed
-          ? "ltr:left-18 rtl:right-18"
-          : "ltr:left-62 rtl:right-62",
+        "h-4 w-4 transition-transform duration-300",
+        collapsed && "rotate-180",
       )}
-    >
-      <ChevronLeft
-        className={cn(
-          "h-4 w-4 transition-transform duration-300",
-          collapsed && "rotate-180",
-        )}
-        aria-hidden="true"
-      />
-    </button>,
-    document.body,
-  );
-};
+      aria-hidden="true"
+    />
+  </button>
+);
 
 export default CollapseButton;
