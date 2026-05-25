@@ -1,8 +1,17 @@
+---
+title: PharmaCore
+emoji: 💊
+colorFrom: blue
+colorTo: purple
+sdk: docker
+app_file: run.sh
+pinned: false
+---
+
 # 💊 PharmaCore
 
 <div align="center">
 
-[![GitHub License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Build Status](https://img.shields.io/badge/Build-Active-brightgreen)]()
 [![Latest Commit](https://img.shields.io/badge/Last%20Updated-May%202026-blue)]()
 [![TypeScript](https://img.shields.io/badge/TypeScript-61.8%25-blue)]()
@@ -229,6 +238,7 @@ PharmaCore/
 │   ├── src/
 │   │   ├── pages/                   # Route pages
 │   │   ├── components/              # React components
+│   │   ├── services/                # API calls
 │   │   ├── api/                     # API clients
 │   │   ├── store/                   # Zustand stores
 │   │   ├── hooks/                   # Custom hooks
@@ -286,17 +296,12 @@ refactor(frontend): centralize API error handling
 
 ---
 
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) for details
-
----
 
 ## 👨‍💻 Author
 
 **Mohamed Almansoury** (@mnsoory)
 - GitHub: [github.com/mnsoory](https://github.com/mnsoory)
-- Email: mnsory2021@gmail.com
+- Email: mohamed.almansoury8@gmail.com
 
 ---
 
