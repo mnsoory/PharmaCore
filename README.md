@@ -305,13 +305,6 @@ refactor(frontend): centralize API error handling
 
 ---
 
-## 🔗 Links
-
-- 📖 [API Documentation](http://localhost:7860/swagger)
-- 🚀 [Hugging Face Spaces](https://huggingface.co/spaces/Mnsory/PharmaCore)
-- 📊 [Repository](https://github.com/mnsoory/PharmaCore)
-
----
 
 ## ❓ Troubleshooting
 
