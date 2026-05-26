@@ -17,6 +17,7 @@ import StaffPage from "./pages/Staff/StaffPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
 import SettingsPage from "./pages/Settings/SettingsPage";
 import DrugAlternativesPage from "./pages/DrugAlternative/DrugAlternativesPage";
+import AuditLogsPage from "./pages/AuditLog";
 import { Toaster } from "sonner";
 
 const queryClient = new QueryClient();
@@ -61,6 +62,7 @@ function App() {
                 <Route path="/users" element={<StaffPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/audit-logs" element={<AuditLogsPage />} />
                 <Route
                   path="/purchase-orders"
                   element={<PurchaseOrdersPage />}
